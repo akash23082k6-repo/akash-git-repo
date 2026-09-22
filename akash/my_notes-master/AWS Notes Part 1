@@ -1,0 +1,690 @@
+cloud computing --- Resources or services user access via internet . for eg. web hosting of a website at a server. 
+Benefits of Cloud computing : 1 . Data Privacy and security. 2 . No Maintenance cost 3. Faster recovery rate. 4 Scale Dynamically 5 . Reducded cost. 
+
+AWS : cloud service provider which provides wide range of services via internet. 
+
+
+AWS services 
+
+1. EC2 -- Elastic compute cloud -- Compute services
+2. RDS -- Relational Database services. for example: Amazon Aurora
+3. Storage Serivces : Amazon S3 , it's similar to google drive. 
+4. Networking services : Cloudfront -- Cloudfront is content delivery network. (CDN) for example : warehouse 
+5. security services  : IAM : Identity and access management. it is used to provide access to user within a organisation as per their roles. 
+6. Management services : Cloud formation : it's help in the formation of architecture of website.
+
+
+Types of EC2 Intances 
+1. General purpose 
+2. Compute optimized
+3. Memory optimized
+4. Storage optimized
+5. Accelerate computing/GPU
+6. High Memory
+7. Previous Generation 
+----------------------------XXXXXXXXXXXX------------------------------------------------------------------------------------------------
+General purpose : It provides balance between compute, memory and networking resources and can be used for variety of purposes. 
+
+Types of series in general purpose instances 
+1. A series -- A1, instances available in medium and large sizes. 
+A1- suited for scale out workload thats are supported to ARM ecosystem. Other then this, A1 can be used for below applications. 
+web server, containenzed micro services, disturbed data store, caching fleets, applications that requires ARM insturction set. 
+2. M series -- M4,M5, M5a are widely used. M5ad and M5d are recently added. 
+M4-- 
+vcpu- 2 to 40(max)
+RAM - 8GB to 160GB (max)
+storage : EBS only 
+M5 -- M5, M5a, M5ad and M5d, used for gaming server, webserver , small and medium database. 
+vcpu- 2 to 96(max)
+RAM - 8GB to 384GB (max)
+storage : EBS , NVMe SSD
+3. T series -- T2, T3 and T3a --- used mainly for testing purpose
+--------------------------------XXXXXXXXXXXX-----------------------------------------------------------------------------------------------
+Compute optimized instances: It is used in batch processing ( Compute bound applications) for example : concept of queues in automation. 
+It is cost effictive and have only one series i.e C series , which have C4, C5 and C5n, C3 now reomved to previous generation instances
+C5 : it optimized heavy workload and delivers cost effective high performances and it power by AWS nitro system. 
+Note : it uses max 25 EBS volumes ,use elastic network adapotor , uses new EC2 hypervisor. 
+
+----------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+Memory optimized instances : It has 3 series ( R, X and Z), X series provides maximum RAM. 
+Used mainly in banking purposes
+---------------XXXXXXXXXXXX------------------------------------------------------------------------------------------------
+Storage optimized instances : it have 3 series ( I,D and H series)
+It is mainly used where sequential read and write access is needed. for example youtube,spotify 
+D series -  D2 , 
+H series - H1 -- local storage capacity upto 16 TB
+I series - I3, I3en
+sequential throughtput -- Read --64 GB/sec  Write --  6 GB/sec -- I3 , 8GB/sec -- I3en
+--------------XXXXXXXXXXXX---------------------------------------------------------------------------------------------------------
+Accelerate computing instances -- it have 3 series (P,G,F)
+It mainly used in live gaming or live streaming platform. AI, machine learing and deep learing used Accelerate computing instances
+F series -- F1 
+G series -- G2 and G3 --- used in 3D visualations 
+P series -- P2 and P3 
+---------------------------------XXXXXXXXXXXXXX------------------------------------------------------------------------------------------------------------
+High memory instances : here dedicated hardware server to assigned  to user.It don't run on hypervisor it is assigned for 3 Years. OS directly on hardware.
+Only one series is there i.e U series U6,U9 and U12
+It's has 448 logical processor
+
+------------------------XXXXXXXXXXXXXX----------------------------------------
+Previous generation instances
+T1, M1 ,C1,CC2, M2, CR1,CG1 i2, HS1, M3, C3 and R3 --- These instances are still available for use. You can still use them and there is no notification regarding deletion of these instances. 
+
+----------------------------XXXXXXXXXXXXXX----------------------------------------
+Basic interview question 
+When billing of a instances started? when you boot the instances upto termination of instances
+which os have pay for sec options available: unbuntu and linux .. not available in windows yet. and tax is not including in billing.
+
+-------------------------XXXXXXXXXXXXXX----------------------------------------
+EC2 Access 
+1. To access instances, need to generate key and key pair name.. if key is not downloaded then you can't access the instances. 
+2. 20 EC2 instances is limit in a region. And to increase number instances per region ,need to request amazon. 
+
+EC2 status check 
+1. AWS check instances status every one minute. In order to identify hardware and software issues. 
+2. EC2 status is inbuilt in instances. user can't modify and change configuration of EC2 status check. 
+3. EC2 is sending metric data to AWS cloudwatch every 5 minutes, which is free , if you want to reduce the time then have to pay . 
+4. EC2 instance are not chargeable if it is stop , however you have to pay for the storage i.e hard disk if instance is not terminated. 
+
+
+Types of root volumes type 
+1. EBS stored backed EC2 instance
+2. Instance store backed EC2 
+
+Instance store root volums is faster as compared to EBS backed , as instance is directly attached ,whereas EBS is attached to network for example: external hard drive.
+-----------------------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+When you stop an EBS Backed EC2 instance?
+*Instance perform a shutdown
+*State changes from running to stoping
+*EBS volumes remain attached to instance
+*Any data cached in RAM or instance Store volume is gone/deleted
+*Instance retain it's private IPv4 or any IPv6 address
+*Instance release public IPv4 to AWS pool
+*Instance retain it's elastic IP address. 
+Note : Elastic IP - it is static public IP. Need to pay for Elastic IP. If not required need to release Elastic IP. 
+
+EC2 Termination 
+* Root volume is deleted automatically when EC2 instance is terminated. 
+* Enable EC2 Termination Protection against accidential termination. It is recommeded to always enable to protect accidential termination of instance by trainee 
+ 
+EC2 Metadata : It has instance details such as IPv4, DNS hostname, AMI- ID,instance ID, local hostname
+* Metadata can only be viewed within the instance
+* Metadata is not protected by encrytion , anyone those have access  to instance can view metadata.
+Note : to View metadata
+GET http://169.254.169.254/latest/Metadata
+
+Instance user data : it is used to additional patch or command during boot option.
+*can be stopped by stopping EC2 first. 
+* data is limited to 16 KB, 
+*it is not encrypted
+
+----------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+Purchasing options 
+* on Demand instance : 
+--> It is used when time period for it's utlisation is unknown or for testing purpose. 
+--> Need to pay on hourly basics
+--> Fixed rate 
+--> Recommended for short term workload that can't be interrupted. 
+--> Used where workload required dynamic scaling.
+Note : Instance can't move from one region to another, but instance can be copy
+--> No need for  advanced payment in on demand instance. 
+
+* Dedicated Instance
+--> Your dedicated instance is isolated from another dedicated instance
+--> On demand instance will not run parallely with dedicated instance, however on demand instance from same account can run with dedicated instance. 
+
+
+* Dedicated Host 
+--> used where lkf required to run on dedicated hardware
+--> here you have to pay from host not for instance, we can create as many instance which is allowed by the capacity for host. 
+
+* Spot instance
+--> It is cheapest among all other purchasing options . available discount upto 90 % compared to on demand prices. 
+--> These are unused instance, they are purchase via biding.
+--> Used to testing purchase
+--> can be stopped, hibernate or terminate the spot instance
+Note : When would my spot instance get interrupted?
+Primary reason : capacity requirment for eg : on demand or reserved instance
+Secondary reason : if you chose to set a max spot price and spot price raise above this. 
+
+* Schedule instance
+--> used for particular time slot on daily ,weeky or monthly basic for one year 
+--> You have to pay , if you are using or not. 
+
+* Reserved Instance
+--> available for one year to three year by giving advanced payment. 
+--> it is cheaper by 75% as compared to on demand instance
+
+Types of Reserved instance 
+1. Standard --- 75 % disount , fixed attributes
+2. Convertiable--- upto 54 % discount , can change attributes
+3. Schedule 
+
+-------------------------------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+cloud infrastructure
+There are three type  
+1. IAAS - Infrastructure as a service
+2. PAAS - Platform as a service
+3. SAAS - Software as a service
+
+Deployement in Cloud 
+1. Public Cloud 
+2. Private Cloud 
+3. Hybrid Cloud 
+
+--------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+* Virtual Private cloud ( VPC) : virtual network or data centre for one client. 
+--> Private cloud : Cloud owned by company or oganization , private cloud is more secure than public cloud. 
+--> VPC is logically isolated. 
+--> Max 5 VPC can be created in a region and 200 subnet in 1 vpc.
+--> Max 5 elastic IP, can be extended by requesting amazon. 
+--> once vpc created DHCP(dynamic host configuration protcol), NACL( Network access control list) and security group will automatically created. 
+--> VPC can't migrate from one region to another . 
+--> VPC is always created in a region,not in availabity region. 
+--> Subnet mask(CIDR) will be  unique for vpc created from one account. however vpc created from different account can have same subnet mask. for eg : vpc 10.0.0.0/16
+--> Subnet mask is created in availabity region, not is region .
+--> CIDR range can't be changed after VPC creation. 
+--> To change CIDR size, create new vpc. 
+--> Different subnet within a vpc can't overlap. 
+--> We can expand vpc  by CIDR adding new ip address range or secondary CIDR.( except govt cloud and AWS china)
+--> NAT gateway created in public subnet but used for private subnet communication . 
+--> Router is inside region. 
+
+* Type of VPC
+1. Default VPC --
+-->default intenet gateway  is defined. 
+--> It is created when AWS account is created. 
+--> Default CIDR, security group, NACL and routing table settings
+2. Custom VPC -- 
+-->default intenet gateway  is not defined. But it can be created by user. 
+--> CIDR  can be choosen by user
+
+
+* Important Steps to create VPC
+--> create a vpc
+--> subnet
+--> Internet gateway
+--> Routing table
+
+* Compenents of VPC
+
+Public subnet --  if subnet's traffic is routed to Internet gateway, then subnet is called public subnet, if you want your instance in public subnet to communicate with intenet,then it should have public ipv4 address or elastic IP address
+Private subnet-- if subnet doesn't have route to intenet gateway,then subnet is called private subnet
+
+Note :  when we create a VPC, you must specify on IPV4 CIDR block between /16 to /28 
+Note : First four and last IP of subnet are reserved and can't be used. 
+for eg :  10.0.0.0/24
+
+10.0.0.0 -- network id 
+10.0.0.1 --reserved for vpc router 
+10.0.0.2 -- DNS server
+10.0.0.3 -- for further use
+10.0.0.255 -- Broadcast address. 
+
+------------------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+*Implied Router( Logically router)  and Route Table 
+-->  It is central router
+--> It connects different availablity zone and connect VPC to internet gateway. 
+--> 200 route table in a vpc, can enter 50 entry . 
+--> Each subnet must be associated with only one route table at any given time. 
+--> If you don't specify subnet to route table association , the subnet will  associated with default VPC route table. 
+-->  You can edit main route table , but can't delete main route table , however it can be delete by making one other route table primary. 
+--> You can associate muliple subnet to same route table. 
+
+* Internet Gateway 
+--> It is a virtual router that connects a VPC  to internet.
+--> Default VPC is connect to internet by default.
+--> New VPC need to connect to internet .
+--> Ensure that your subnet route table point to internet gateway. 
+--> It performs NAT between public and private IPV4 address. 
+--> It support IPV4 and IPV6 both.
+
+--------------------------------------------XXXXXXXXXXXX-------------------------------------------------------------------------------------
+NAT(network address transalation ) Gateways : 
+-->  NAT :  It allows private instance to access internet gateway.
+--> only elastic iP is used in NAT Gateway where public and elastic ip both can be used in NAT instance.
+--> NAT Gateway will always be at public subnet. and need to assign particular public subnet to NAT Gateway
+--> NAT gateway is like PA . It used to secure database. 
+--> Need to pay for creating and using NAT gateway and also have to pay to processing via NAT gateway
+--> Need to assign a particular elastic iP to NAT Gateway at the time of it's creation. 
+--> No need to assign public ip to private instance. 
+--> Need to update router table after creation of NAT gateway so that private instance have acces to internet gateway. 
+--> Deleting a NAT gateway , disassociate it's elastic IP address. but doesn't release the elastic IP address from your account. 
+
+Note : To access internet for private instance , NAT came into picture. 
+
+Security groups :
+--> It is virtual firewall at ENI level 
+--> upto 5 security group as per EC2 instance interface can be applied . 
+--> security group can only have permit rules , can't have deny rules.
+--> Stateful ,return traffic of allowed inbound traffic is allowed even if there are no rules to allow it. 
+
+Network Access control list ( NACL) 
+--> It is function performed on the implied router. 
+--> It provides optional layer of security at router/VPC level. Act as a firewall for controlling traffic in or out of one or more subnet. 
+--> Default NACL , by default it all inbound and outbound ipv4 traffic and if applicable ,IPV6.
+-->You can create custom NACL and associate with subnet. custom NACL deny all inbound and outbound traffic by default, even though you can enable inbound or outbound traffic.
+--> In VPC, each VPC must be associated with NACL , if not associated it will automatically attached with default NACL. 
+-->NACL can have muliptle subnet , however one subnet will be attached with one NACL. if subnet is attached with new NACL then previous attachement is released. 
+--> NACL contains as numbered list of rules that we evaluate in order. starting with lowest numbered rule. for eg lower number rule have high priority. 
+--> The higest  rule number that you can use for a rule is 32766, recommeded that you create rule with multiple of 100. 
+--> It works at subnet level. 
+-->NACL are stateless, means inbound and outbound must be explicity allowed . 
+--> NACL can have permit and deny rule. 
+ 
+ 
+* Differnece with security group and NACL
+
+       Security group                                                     NACL
+--> Operate at instance level                              --> Operate at subnet level 
+--> Support allow rules only                               --> support both allow as well as denny rules
+--> Stateful , return traffic is automatically allowed    --> Stateless, return traffic must allowed seperately. 
+--> Applies at an instances                                --> Applies to all instance in the subnet. 
+--> room,for example                                        --> Main gate for example 
+
+
+* VPC peering 
+
+--> it will allow communication between two VPC operating on private IPV4 without having access to internet gateway .
+--> Instance  in either VPC can communicate with each other as if they are within same network. 
+--> You can create VPC peering among your own VPC or with a VPC in another AWS account. VPC can be in different region. 
+Note : Transitive Peering : suppose there are 3 VPC , A, B and C. if A is paired with B and B is paired with C. if doesn't means A can communicate with C, different peering is required.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

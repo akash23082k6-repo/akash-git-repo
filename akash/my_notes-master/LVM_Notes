@@ -1,0 +1,108 @@
+
+
+>> To mount the volume to EC2 instance : 
+    Link: https://devopscube.com/mount-ebs-volume-ec2-instance/ 
+
+>> To make a volume LV , we have umount the volume 
+
+    sudo umount /dev/xvdf
+
+>> How to Create LVM Partition in Linux
+   Link : https://www.learnitguide.net/2016/06/how-to-create-lvm-partition-in-linux.html
+
+1. Identify the volume we want to convert it into logical volume. 
+2.  Create Physical Volumes (PV) on the disk.
+   command: pvcreate /dev/xvdf
+   Note : It can be more than one volume . 
+   ## Command to check Physical volume
+    pvscan
+    pvdisplay pvname   
+3. Create Volume Group (VG) on the Physical Volumes
+    command : vgcreate datavg /dev/sdf   
+      here datavg --> volume group name , /dev/sdf --> physical volume name 
+
+    ## Command to check logical volume 
+    vgdisplay -v datavg 
+    here: datavg ---> logical group name 
+4. Create Logical Volumes (LV) on the Volume Group
+    command: lvcreate -L 99G -n datavol1 datavg 
+
+    here : 99G --> size of volume,  datavol1 --> logical volume name ,datavg--> volume group name 
+
+5. Create filesystem for the logical volumes.
+    command: mkfs.ext4 /dev/datavg/datavol1 
+
+6. To mount the volume 
+    command : mount /dev/datavg/datavol1 /data 
+
+
+*************************************************************************************************************
+                                         To Undo LVM configuation
+*************************************************************************************************************
+Note : Need to umount LVM prior to execuation of below steps. 
+1. To delete LV:
+     command to check LV : lvs 
+     command to delete LV: lvremove /dev/datavg/datavol1  
+                  here: /dev/datavg/datavol1 is logical volume name (lv name )
+2. To delete VG 
+      command to check VG: vgs 
+      command to delete VG: vgremove  /dev/datavg 
+                      here /dev/datavg is VG name 
+3. To delete PV 
+      command to check PV: pvs 
+      command to delete PV: pvremove /dev/xvdf
+                  here /dev/xvdf is PV name. 
+
+ To mount LVM permanently , need to update /etc/fstab
+ for eg : /dev/mapper/fedora_localhost--live-root /mnt/fedora/root ext4 defaults 0 0
+         /dev/mapper/fedora_localhost--live-home /mnt/fedora/home ext4 defaults 0 0 
+
+*************************************************************************************************************
+                                         To mount EBS volume in linux
+*************************************************************************************************************
+
+1. Create an XFS filesystem using the EBS volume.
+   
+sudo mkfs -t xfs /dev/xvdf
+
+2. Create the directory which you want to mount.
+  sudo mkdir /data
+
+3. Mount the newly created directory.
+
+sudo mount /dev/xvdf /data
+
+4. The above step will only mount the volume temporarily & will not survive a reboot. To make it permanent, we need to add an entry in /etc/fstab file. Before, that we need to find the Volume ID. This command will show this information.
+ sudo blkid
+
+5. Copy the existing /etc/fstab file. 
+
+sudo cp /etc/fstab /etc/fstab.bkp
+
+6. Add the below line to /etc/fstab file & save it. 
+UUID=aebf131c-6957-451e-8d34-ec978d9581ae  /data  xfs  defaults,nofail  0  2
+
+Note : Replace UUID with the actual value from step # 4.
+
+7. To test, first unmount the volume. 
+
+sudo unmount /data
+
+8. Mount it back.
+
+sudo mount -a
+
+9. Reboot , then check the output of df -h to verify EBS volume is still mounted or not. 
+
+**************************************************************************************************************************************************
+                               Troubleshooting 
+***************************************************************************
+for selium error : link : https://dump.4network.org/2018/12/10/mounted-disk-does-not-contain-selinux-labels/
+
+restorecon -R /mnt/backup 
+entry in fstab file . 
+ systemctl daemon-reload
+ 
+ for read-only filesystem error 
+
+ sudo mount -o rw,remount / 

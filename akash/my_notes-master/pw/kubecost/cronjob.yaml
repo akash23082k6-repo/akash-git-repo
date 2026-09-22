@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kubecost-prod-weekly-report-cron
+spec:
+  schedule: "0 19 * * 1"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: prod-kubecost-sa  # need to create own service which will have access to SES or S3
+          containers:
+          - name: kubecost-report-container
+            image: 539436019547.dkr.ecr.ap-south-1.amazonaws.com/kubecost:2 # Replace with your Docker image that includes package manager (e.g., apt, yum)
+            
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                 curl -X GET http://kubecost-cost-analyzer:9090/model/allocation   -d window=7d   -d aggregate=service   -d accumulate=true   -d shareIdle=true   -d format=csv   -G > /tmp/report.csv
+                 current_date=$(date +'%Y/%m/%Y-%m-%d')
+                 aws s3 cp /tmp/report.csv s3://pw-kubecost-reports/"${current_date}"-weekly-report.csv
+                 python3 /tmp/weekly_cost.py
+          restartPolicy: Never

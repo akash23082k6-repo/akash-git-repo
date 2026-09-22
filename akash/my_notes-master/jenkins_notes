@@ -1,0 +1,151 @@
+
+>> Inline policy for IAM user 
+
+ {
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "VisualEditor0",
+"Effect": "Allow",
+"Action": [
+"ec2:StartInstances",
+"ec2:StopInstances"
+],
+"Resource": "*"
+}
+]
+}
+
+
+********************************************************************************************************
+
+
+ ************************************************************************************************
+Jenkins bash script to start and stop multiple instance on the basics of private IP. 
+ **********************************************************************************
+#!/bin/bash
+IFS=,
+ip=($ips)
+for i in ${!ip[@]}
+do
+    id=`aws ec2 describe-instances --filter Name=private-ip-address,Values=${ip[$i]} | jq -r '.Reservations[].Instances[] | .InstanceId'`      
+    echo "${ip[$i]} is on index $i"
+if [ "$Status" = "Start" ]
+ then
+aws ec2 start-instances --instance-ids $id
+elif [ "$Status" = "Stop" ]
+then
+aws ec2 stop-instances --instance-ids $id
+fi
+
+done
+
+*****************************************************************************************
+Declartive Pipeline to start and stop multiple instance on the basics of private IP. 
+*******************************************************************************************
+def ip
+def status=""
+
+
+pipeline {
+    agent any
+    
+    stages {stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['Start', 'Stop'],
+                                name: 'Status'
+                            ),
+                            string(
+                                defaultValue: '',
+                                name: 'ips',
+                                trim: true
+                            )
+                        ])
+                    ])
+                }
+            }
+        }
+        stage('reading ips') {
+      steps {
+       script {
+         ip="$ips"
+        }
+        echo "$ip"
+       
+      }
+    }
+    stage('getting action') {
+        steps { 
+            script {
+                status="$Status"
+                
+                }
+                echo "$status"
+            }
+    }
+    stage('start') {
+       when {
+        expression { status == 'Start' }
+      } 
+        
+        steps { 
+            script { 
+                ip.tokenize(',').each {
+                    sh "aws ec2 describe-instances --filter Name=private-ip-address,Values=$it | jq -r '.Reservations[].Instances[] | .InstanceId' >>ids.txt" 
+                    final String content = readFile(file: "ids.txt")
+                    final List ids = extractLines(content)
+                    echo "myKeys = ${ids}"
+                    for (int i = 0; i < ids.size(); i++) {
+                    sh "aws ec2 start-instances --instance-ids ${ids[i]}"
+                   
+                  }
+                }
+                
+             }
+            
+        }
+        
+        
+    }
+       stage('stop') {
+       when {
+        expression {status == 'Stop' }
+      } 
+        
+        steps { 
+            script { 
+                ip.tokenize(',').each {
+                    sh "aws ec2 describe-instances --filter Name=private-ip-address,Values=$it | jq -r '.Reservations[].Instances[] | .InstanceId' >>ids.txt" 
+                    final String content = readFile(file: "ids.txt")
+                    final List ids = extractLines(content)
+                    echo "ids= ${ids}"
+                    for (int i = 0; i < ids.size(); i++) {
+                    sh "aws ec2 stop-instances --instance-ids ${ids[i]}"
+                    
+                   
+                  }
+                }
+                
+             }
+            
+        }
+    }
+     stage('delete id file') {
+         steps{
+              sh '''rm  ids.txt'''
+         }
+      }
+    }
+}
+@NonCPS
+List extractLines(final String content) {
+    List ids = []
+    content.eachLine { line -> 
+        ids << line
+    }
+    return ids
+}

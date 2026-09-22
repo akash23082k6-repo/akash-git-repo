@@ -1,0 +1,22 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ses:SendEmail",
+                "s3:PutObject",
+                "s3:GetObject",
+                "ses:SendRawEmail",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:ses:*:539436019547:identity/*",
+                "arn:aws:ses:*:539436019547:configuration-set/*",
+                "arn:aws:s3:::pw-kubecost-reports/*",
+                "arn:aws:s3:::pw-kubecost-reports"
+            ]
+        }
+    ]
+}

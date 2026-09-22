@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    
+    stages {stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['fastag-asset-handler', 'fastag-issuance-migration', 'fastag-issuance', 'fastag-issuer-efkon-netc-engine', 'fastag-issuer-reporting', 'fastag-issuer-switch', 'fastag-issuerproxysql-service', 'fastag-trans-dashboard', 'fastag-transport-panel-web'],
+                                name: 'service'
+                            ),
+                            string(defaultValue: '', description: 'Enter date in YYYY-MM-DD Format', name: 'Date'),
+                            string(defaultValue: '', description: 'Enter hour in HH(24 hours format)', name: 'time'),
+                        ])
+                    ])
+                }
+            }
+        }
+        stage('Download the s3 logs') {
+             steps {
+                  sh '''
+                  ssh root@172.23.206.18 'aws s3 ls s3://fastag-prod-log-backup/paytmbank/prod/fastag/'${service}'/application/'${Date}'/archive/ --profile fastag-prod > /efs_data/'${service}.log''
+                  ssh root@172.23.206.18 'awk -F \"/\" \'{ print \$8 } \' /efs_data/fastag-issuer-reporting.log > bucketname' 
+                 '''
+            }
+        }
+    }
+}

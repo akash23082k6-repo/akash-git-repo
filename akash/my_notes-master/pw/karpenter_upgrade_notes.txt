@@ -1,0 +1,19 @@
+export TAG=v0.19.0
+export CLUSTER_NAME="Dev-eks-cluster"
+export AWS_ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
+export KARPENTER_IAM_ROLE_ARN="arn:aws:iam::559741543588:role/karpenter-controllerrole"
+export CLUSTER_ENDPOINT="$(aws eks describe-cluster --name ${CLUSTER_NAME} --region ap-south-1 --query "cluster.endpoint" --output text)"
+
+
+
+
+
+helm install karpenter oci://public.ecr.aws/karpenter/karpenter --version ${TAG} --namespace karpenter \
+  --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${KARPENTER_IAM_ROLE_ARN} \
+  --set settings.aws.clusterName=${CLUSTER_NAME} \
+  --set settings.aws.clusterEndpoint=${CLUSTER_ENDPOINT} \
+  --set settings.aws.defaultInstanceProfile=KarpenterNodeInstanceProfile-${CLUSTER_NAME} \
+  --set settings.aws.interruptionQueueName=${CLUSTER_NAME} \
+  --wait \
+  --atomic \
+  --timeout 2m15s 

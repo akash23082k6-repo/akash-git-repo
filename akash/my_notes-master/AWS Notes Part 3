@@ -1,0 +1,527 @@
+* AWS Autoscaling 
+>> Autoscaling is region specific
+>> Autoscaling is evenly disturbed.
+>> Creating group of EC2 instance that can scale up or down depedning on condition you set. 
+Note : Scale out -- increasing server, scale in -- decreasing server
+>> Enable elasticity by scaling horizontially through adding or terminating EC2 instance. 
+>> Autoscaling ensure that you have right number of EC2 instances for your needs at all the time. 
+NOte : Cost effective and no extra cost for the instance launch via autoscaling. 
+      : Autoscaling enable your serivces to be fault tolerance and elastic. 
+	 
+* Auto scaling components 
+>> Lauch configuration -- like instance type , AMI , keypair security group
+>> Autoscaling group -- Group name , group size , vpc , subnet , health check period
+>> Scaling policy -- Metric type , Target volume 
+
+* Autoscaling balancing 
+>> If autoscaling find that number of EC2 instance launched by ASG into subjet AZ are not evenly disturbed and ASG will re autoscaling by itself. 
+>> AS always try to balance the instance disturbed across AZ. 
+>> While rebalancing , ASG launch new instance EC2 where are the less number instance then terminates instance where no. of instance are more. 
+
+What caused inbalance of EC2 instance 
+>> If we add or remove subnet or avaialbity group from autoscaling group.
+>> If you requesting EC2 termination from autoscaling group. 
+>> An AZ doens't have enough EC2 capacity now has enough capacity and it is one of the autoscaling group. 
+
+----> We can attach a running EC2 instance to  an autoscaling group by using AWS console or CLI  if the condition are met. 
+>> Instance must be an running state. 
+>> AMI used to launch the EC2 instance still exist. 
+>> Instance is not part of another autoscaling group. 
+>>  Instance is in the same AZ of the same  group. 
+>> If the existing EC2 instance under the autoscaling group, plus the one to be needed, exceed the max capacity of autoscaling group, the request will fail, EC2 instance would not be added.
+ 
+>> You can manually remove EC2 instance from autoscaling group using AWS consle or CLI. 
+>> You can manage the deattach instance independently  or attach to another autoscaling group. 
+>> When you detach an instance , you have option to reduce the autoscaling group capacity.
+>> When you delete autoscaling group it's parameter like max, min and desired capacity are all set to zero, hence it terminates all EC2 instance. 
+>> If you wan to keep EC2 instance and manage then independently then detach then first from autoscaling group before deleting autoscaling group. 
+
+** Elastic load balancer with with autoscaling group
+>> We can add one or more elastic load balancer to our autoscaling group.
+>> Elastic load balancer must be in same region as of autoscaling group. 
+>> Once , you do this , any EC2 instance existing or added by the autoscaling group will be automatically defined at elastic load balancer.
+>> You do not need to register those instance manually on the autoscaling group defined elastic load balancer
+>> Instance and the ELB must be in the same VPC. 
+
+** EC instance health check in autoscaling
+>> Autoscaling classifies it's EC2 instance health status either healty  or unhealth. 
+>> By default , AS uses EC2 status check only to determing health status of an instance. 
+>> When you have once or more ELB defined with the autoscaling group, you can configure autoscaling to use both EC2 health check and ELB health check to  determine instance health. 
+>> Health check peroid is 300 sec by default. 
+>> If we set zero , in grace period ,  the instance health is checked once it is in service. 
+>> Untill the grace period  timer expires any unhealthy status reported by EC2 status check, or the ELB attached to the autoscaling group will not be acted upon. 
+
+---> When grace peroid expire the autoscaling group would consider an instance unhealthy as follows 
+>> EC2 status check report to autoscaling group instance state other then  running. 
+>> If ELB health check configured used by autoscaling group reported instance as out of serivce.
+>> Unlike AZ rebalancing , termination of unhealthy instance happen first, then autoscaling attempt to launch new instance to replace ones terminated. 
+>> Elastic IP and EBS volume get detched from terminated instance you need to manually attach them to the new instance. 
+
+------------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-------------------------------------------------------------
+* In below cases you will get notification via mail. 
+>> An instance is launched
+>> An instance is terminated
+>> An instance failed to launch
+>> An instance failed to terminated. 
+
+* Merging autoscaling group
+>> Can only merge two autoscaling group via CLI. 
+>> YOu can merge multiple , single AZ, autoscaling group into  multiple AZ group single autoscaling group. 
+>> Scale out -- increasing server, scale in -- decreasing server
+ Note : Lauch configuration can't be edit, it can only copy and delete. 
+>> It is always  recommended to create scale-in event for each scale out event you create.
+
+* AWS mointering 
+>> AWS EC2 services sends EC2 metrics to cloudwatch about the ASG instance.
+>> Basic mointering  ( every 300 secs enabled by default and free of cost.)  
+>> You can enabled detail mointering ( every 60 sec and it is chargeable ) 
+>> When launch configuration done by AWS CLI, by default montering for EC2 instance will be detial. 
+
+**Standby state
+>>  You can manually move an instance from an ASG and put it in standby state. 
+>> Instance in standby state are still managed by autoscaling. 
+>> Instance in standby state are chargeable. 
+>> Standby instance are not count towards available resources. 
+>> health check up is not done during standby state. 
+
+
+** Autoscaling policies 
+>> It is of two type -- Manual/static and Dynamic 
+>> Dynamic policies -- Target tracking , Simple scaling policy and step scaling  policy
+     -- Target tracking -- keep the load to a particular limit.for eg cpu ultilization 70%
+	 -- Simple scaling policy -- it set the limit of load , if increase above that then add particular server defined at time of policy creation. 
+	 -- Step scaling policy -- here load are managed via step scaling set at it creation. It doesn't support cool down period. 
+
+
+** Scaling policies 
+>>  Define how much you want to scale based on defined conditions. 
+>> Autoscaling group uses alarms and policies to determine scaling. 
+>>  For Simple or step scaling , a scaling ajdustment cna't change the capacity of the group above the max group size or below the group size. 
+>> Predective scaling : It will check history of the Autoscaling group load and manage the load efficiently . or you can also schudulded the number of instance. It uses machine learing to predict pattern. 
+>> Traget tracking policies : Manage  the load to a particular limit.for eg cpu ultilization 70%
+>> Simple scaling policy -- it set the limit of load , if increase above that then add particular server defined at time of policy creation. 
+>> Step scaling policy -- here load are managed via step scaling set at it creation. It doesn't support cool down period. 
+
+***********************************************XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-------------------------------------------------------------
+
+** Type of Load balancer
+>> Load balancer distributes the web traffic to available server. It provides fault tolerance and high avaialbity. It is region specific.
+
+Type of load balancer
+1. Application load balancer  -- 7th layer of OSI -- supports htts and https , introuduced in 2016.
+2. Network load balancer  -- 4th layer of OSI - transport layer. TCP /UDP and TLS protocol.
+3. Classic layer balancer( Previous Generation) - 4th and 7th layer , support both both portocol.ports support 1-65535 
+
+Note : 
+>> Load balancer DNS  convert into IP.
+>> Instance connected to load balancer must have private IP, public IP may or may not be assigned. 
+>> All the commucitation may not be go through load balancer. for example ping test using ICMP protocol doesn't go through load balancer.
+>> main components of load balancer : listener , target group and target.   
+    -- listener -- check the request and send the traffic accordingly.
+    -- Traget group -- set/group of instances 
+    -- Target -- a particular instance --IP , lambda and instance.
+        When target type is iP , you can use only following CIDR
+          10.0.0.0/8
+          100.64.0.0/10
+          172.16.0.0/12
+          192.168.0.0/16
+     Note: You can't specific public IP address as traget IP. 		  
+	 
+** ELB listener 
+>> It is the process that checks for connection request. 
+>> You can configure the protocol/port no on which your ELB listener for connection request. 
+>> Frontend listeners check for traffic from client to the listener .
+>> Backend  listeners configured with protocol/port to check for traffic from the ELB to the EC2 instance. 
+>> It may take sometime for the registration of the EC2 instance under ELB to complete. it will check two ping test to determine wheather instance is healthy or not. 
+>> Resgister EC2 are those register under ELB. 
+>> ELB has nothing to do  with the outbound traffic that is generated from the registered EC2 instance destined to the internet . 
+>> ELB only has to do with inbound traffic destined to the EC2 registered instance.
+>> You are charged hourly once start ELB. Delete ELB if it's doesn't required. 
+>> Before deleting ELB, forward traffic to the route 53.
+>> In the case EC2 registered instance has multiple IP address on ethO will route the traffic to it's primary IP address.
+
+
+>> ELB only support IPV4 only. 
+>> ELB only connect with only one subnet of Availablity zone. 
+>> Smallest CIDR of subnet is /27.
+>> 8 IP in subnet is reserved for ELB , in case load increased on ELB.
+>> For fault tolerance you disturbed registered EC2 instances across avaialbity zone. For network to be fault tolerant, we should use atleast 2 AZ. 
+>> If possible create same no . EC2 instance in different AZ. 
+>> ELB mointer the health of EC2 instance and route the traffic to healthy instances. 
+>> ELB stop sending load to unhealthy instance. 
+>> By default http ping test for health check in case of consle. IN case of API TCP ping is used. 
+>> Healthy instance must replied with HTTP '200ok' message within the timeout period as it is consider as unhealthy.
+>> Response timeout is 5 sec as default, ( range 2 - 60 ) 
+>> Health check interval : default 30 seconds ( range 5 - 300 ) 
+>> Unhealthy threshold 
+   * No of consecutive failed health check that should occur before instance declared as unhealthy. default 2 , range 2 -10
+>> Healthy threshold
+  * No of consecutive health check  that should occur before instance declared as unhealthy. default 10 , range 2 -10
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+** Cross zone load balancing 
+>> By default ELB distributes load among differnt  AZ irrespective of the no. of register instances present in the AZ. to counter this scenario cross zone load balance came in the picture.
+>> Cross Zone load balancing disabled by default. 
+>> when Cross zone load balancing is enabled, then ELB will disturbute traffic evenly among register EC2 instances. 
+>> ELB  name must be unique in same account. 
+>> ELB is region specific , so all registered EC2 instances must be in same region but can be in different AZ. 
+>> To define ELB in AZ, you can select one subnet in AZ, subnet can be public and private. 
+>> Only one subnet can be defined for ELB in an AZ, if you defined another subnet then previous subnet will be detach from the ELB. 
+>> If correct subnet is not connnected to ELB then ELB will not route the traffic to that AZ. 
+>> ELB should be accessed by DNS not via IP.
+>> ELB can be internet facing or internal ELB.
+     ----> Internet facing -- ELB node will have publilc IP.
+	 ----> DNS will resolve ELB DNS name to their IP address.
+	 ----> It routes traffic to the private IP address of your registered EC2 instances.
+	 ----> Intenet facing ELB must have public subnet  so that ELB can route the internet traffic. 
+	 ----> Format of the public ELB DNS name of internet facing ELB.
+	        name=1234567890.region.elb.amaozonaws.com
+	 ----> Format for internal ELB
+	       internal=name 123456789.region.elb.amaozonaws.com
+		   
+		  Note : if nothing is mention before that then it is internet facing ELB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

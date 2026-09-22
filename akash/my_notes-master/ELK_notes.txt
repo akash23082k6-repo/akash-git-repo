@@ -1,0 +1,133 @@
+*********************************************************************************************
+ELK Installation 
+***********************************************************************************************
+
+### Installing Elasticsearch
+
+Link : https://www.elastic.co/guide/en/elasticsearch/reference/7.13/deb.html#deb-repo
+
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt-get install apt-transport-https
+echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+sudo apt-get update && sudo apt-get install elasticsearch
+sudo systemctl daemon-reload
+sudo systemctl enable elasticsearch.service
+sudo systemctl start elasticsearch.service
+sudo systemctl stop elasticsearch.service
+curl -XGET 'localhost:9200/_cluster/health?pretty'    -- to check elastic search heatlh 
+
+
+***************************************************************
+Installation Logstash 
+***************************************************************
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt-get install apt-transport-https
+echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
+sudo apt-get update && sudo apt-get install logstash
+sudo systemctl daemon-reload
+sudo systemctl enable logstash.service
+sudo systemctl start logstash.service
+
+**********************************************************
+creating nginx config file .. 
+*********************************************************
+cd /etc/logstash/conf.d
+
+vi nginx.conf
+
+
+input {
+
+file {
+
+path => "/var/log/nginx/*.log"
+start_postion => "beginning"
+sincedb => "/dev/null"
+
+ }
+
+}
+
+filter {
+
+date {
+
+match => ["timestamp", "dd/MMM/YYYY:HH:mm:ss Z"]
+
+}
+
+geoip { 
+
+source => "clientip"
+
+}
+
+}
+
+output { 
+
+elasticsearch { 
+
+hosts => ["3.110.45.132:9200"]
+index => "nginx_logstash"
+
+ }
+
+stdout {
+
+codec => rubydebug
+
+
+ }
+ }
+
+sudo apt-get install default-jre   ---> to install java 
+
+cd /usr/share/logstash    
+
+sudo chmod 777 data Gemfile Gemfile.lock     ----> change permission of these files. 
+
+
+bin/logstash-plugin list    --> to list of logstash plugin 
+
+bin/logstash-plugin install  plugin name ---> to install plugin. 
+
+
+bin/logstash -f /etc/logstash/conf.d/nginx.conf    
+
+
+*****************************************************************************************
+Installtion of kibana 
+**************************************************************************************
+
+sudo apt install kibana
+sudo systemctl daemon-reload
+sudo systemctl enable kibana.service
+sudo systemctl start kibana.service
+
+sudo su - 
+
+cd /etc/kibana
+
+vi kibana.yml 
+
+## changes -----
+
+elasticsearch.hosts: ["http://localhost:9200"]
+server.host: 0.0.0.0
+server.port: 5601
+
+
+cd /etc/elasticsearch
+
+vi elasticsearch.yml 
+
+# changes ----
+
+network.host: 0.0.0.0
+http.port: 9200
+discovery.seed_hosts: ["3.110.45.132"]
+
+Note : then restart kibana and elastic search service .. and then check kibana UI with public ip with port : 5601 
+
+

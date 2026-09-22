@@ -1,0 +1,30 @@
+# apiVersion: monitoring.coreos.com/v1
+# kind: PrometheusRule
+# metadata:
+#   name: hpa.rules
+#   namespace: monitoring
+# spec:
+#   groups:
+#     - name: hpa.rules
+#       # rules:
+        # - alert: Current replica count is above 80% of max replica for 5 mins
+        #   expr: kube_horizontalpodautoscaler_labels * on (horizontalpodautoscaler, namespace) group_right(label_team)(( kube_horizontalpodautoscaler_status_current_replicas / kube_horizontalpodautoscaler_spec_max_replicas ) * 100 > 80 )
+        #   for: 5m
+        #   labels:
+        #     severity: warning
+        #     namespace: "{{ $labels.namespace }}"
+        #     team: "{{ $labels.label_team }}"
+        #   annotations:
+        #     message: "Current replica count is above 80% of max replica for {{ $labels.horizontalpodautoscaler }} HPA in {{ $labels.namespace }} for 5min"
+        #     description: "Current replica count  is > 80%  VALUE = {{ $value }}, for {{ $labels.horizontalpodautoscaler }} HPA  in namespace {{ $labels.namespace }}"
+
+        # - alert: Current Replica Count is 100% of max replica for 5 mins
+        #   expr: kube_horizontalpodautoscaler_labels * on (horizontalpodautoscaler, namespace) group_right(label_team)(( kube_horizontalpodautoscaler_status_current_replicas / kube_horizontalpodautoscaler_spec_max_replicas ) * 100 == 100 )
+        #   for: 5m
+        #   labels:
+        #     severity: critical
+        #     namespace: "{{ $labels.namespace }}"
+        #     team: "{{ $labels.label_team }}"
+        #   annotations:
+        #     message: "Current replica count  is == 100% for {{ $labels.horizontalpodautoscaler }} HPA in namespace {{ $labels.namespace }}"
+        #     description: "Current replica count  is == 100% for {{ $labels.horizontalpodautoscaler }} HPA in namespace {{ $labels.namespace }}"

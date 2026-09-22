@@ -1,0 +1,466 @@
+***********************************************************************************************
+>> Kube 8 : Namespace and contexts 
+***********************************************************************************************
+
+Namespace is just like partition in your hard disk, we can have deployemnt of same name in a cluster if it's launched in different namespace . 
+
+## Command to check cluster info : kubectl cluster-info 
+
+## Command to check nodes in cluster: kubectl get nodes 
+
+## command to check namespace : kubectl get ns 
+
+## command to check pods in a particular namespace : kubectl --namespace kube-system  get pods  , here kube-system is a namespace. 
+
+## command to create namespace : kubectl create namespace demo  
+
+## comamnd to check kubernetes config :  kubectl config view 
+
+## command to display context : kubectl config get-contexts 
+
+## command to create new context : kubectl config set-context kube-sys --namespace=kube-system --user=minikube --cluster=minikube
+
+## command to switch context : kubectl config use-context kube-sys
+
+## Command to delete context: 
+kubectl config unset users.gke_project_zone_name
+
+kubectl config unset contexts.aws_cluster1-kubernetes
+
+kubectl config unset clusters.foobar-baz
+
+## Command to delete Namespace:
+kubectl delete namespace namespacename 
+
+***********************************************************************************************
+>> Kube 9 :  How to use node selector in kubernetes 
+***********************************************************************************************
+
+Node selector : It is used to schedule a pod on a particular node , it is achieved by labels : 
+First we will put label of nodes and we will use same label in you depolyment files using nodeSelector . 
+
+## Command to label the node : kubectl label nodename key=value 
+  Note : label will be always in key value pair. 
+## Command to check label on node : kubectl get node nodename --show-labels 
+
+***********************************************************************************************
+>> kube 9.1 : PodNodeSelector Admission Control Plugin | Assigning pods to nodes
+***********************************************************************************************
+
+PodNodeSelector is a plugin which will help to schedule a pod to a particular worker node . 
+We can achieve the same with nodeselector but it will hectic , if the no . of pods are large in number . 
+In PodNodeSelector plug , we will label node/nodes , and we same label at the time of deployment . 
+It is mainly used to schedule a pod on particular namespace in particular set of nodes,depending upon the node configuration and pod specficiation requirement . 
+
+>> first need to label the workernodes 
+## Command to label the node : kubectl label nodename key=value 
+  Note : label will be always in key value pair. 
+## Command to check label on node : kubectl get node nodename --show-labels 
+>> To enable PodNodeSelector plug : need to login to master node, update kube api server pod and edit the /etc/kubernetes/mainfests/kube-apiserver.yaml 
+and edit under specs section : enable-admission-plugins= PodNodeSelector
+
+Note : Moment you edit the yaml file , we will loose the connectivity from kubernetes cluster since kube-apiserver pod is restarted. 
+
+And later we will edit the namespace  with  following code : 
+
+Link: https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ 
+
+  annotations:
+    scheduler.alpha.kubernetes.io/node-selector: "env=dev"
+
+## Running pod in particular namespace : kubectl -n dev run nginx --image nginx --replicas 3 
+
+***********************************************************************************************
+>> kube 10 : Kubernetes DaemonSets
+***********************************************************************************************
+
+DaemonSets :
+>> If you are running yours pods as daemonset then all nodes in the cluster will have instance of your pod running on them and if we add another node in the cluster daemonset will be added automatically on that node. 
+>> We can target particular set of node to run as a daemonsets based on the labels. 
+
+***********************************************************************************************
+>> kube 11 : Jobs and cronjob in kubernetes cluster 
+***********************************************************************************************
+
+Jobs : Job will run (depending upon its configuration) and exits. It's not like pod/replicas deployment,
+       Jobs are created to do some specific tasks. Jobs doesn't runs for forever, it just runs for completion. 
+
+Terms used related to Job. 
+1. Default run : It will simple run and completed the job with specific task mentioned in job description. 
+2. Killing pod and restart pod: In this case ,if we kill the pod before job get completed (exits with successful rc code i.e 1), it will keep on spin the new pod until job get completed. 
+3. completions: It will sequential complete the job , for eg, completions value is 2 than job will run 2 times one after the other. 
+4. parallelism: It tell how many job can run in parallel , for eg if completions value is set to 10 and parallelism value is 2 then it will iterate 5 times with running two job at same time. 
+5. backofflimit: It specific how many times job should try to spin pod if job keeps on falling to complete itself. Default value of backofflimit is 6. 
+6. activeDeadlineSeconds: It is used when you don't want your job to keep of running after specific time period, for eg, if your job take on an average of 20 seconds for completion and we don't want your job to exceeds 20 seconds to complete it's execution then activedeadlineSeconds came in picture . 
+
+Cronjob: It is used to schedule a job/task as per your requirement.
+# Note : By default kuberenets keep the records of last 3 succesfully completed cronjob and one last failed job for debugging purpose .  
+#  Note : When we delete the cronjob , it may or may not delete all the pod , if any pods left behind we have clean it manually. 
+
+Terms used related to cronjob: 
+1. successfulJobsHistroyLimit: it hold the records of successfully completed job, by default its 3, but we can alter as per ours liking. 
+2. failedJobsHistoryLimit: It hold the records of failed job, by default its  1 , but we can alter as per our requirement. 
+3. suspend : It will stop launching/schduling new cronjobs,but keep in mind already running cronjobs will not be effected by it. 
+# Note : Imperative approach to change suspend status
+kubectl patch cronjob cronjobname -p '{"spec":{"suspend":false}}'
+4. concurrencyPolicy: Running multiple cronjob at the same time. 
+   concurrencyPolicy can have three possible value : allow(default value), replace and forbid. 
+   a) allow : this is default concurrency policy means it allow multiple job to run at same time. 
+   b) forbid: this will not allow second job to start if there is already job running at that time. 
+   c) replace : this will replace the already running job.  
+
+***********************************************************************************************
+>> kube 11.1 : Deleting job in kubernetes after completion. 
+***********************************************************************************************
+Be default job stay in the system after it's completion and we hace to delete manually . 
+We can delete the job  automatically after its completion by enabling feature gate : TTLAfterFinished. 
+
+We need to enable feature gate : TTLAfterFinished  in kube-apiserver and kube-controller yaml file and also in job mainfest . 
+
+***********************************************************************************************
+>> kube 14 : Using secrets in Kubernetes
+***********************************************************************************************
+
+Secrets is the secure and preferred way to pass on sensitive data among various kuberenetes component. 
+Rather the expose sensitive data in plain text , it will get encrypt in base64 and then these value are pass to secret yaml file. 
+
+## Using Secrets as environment variables: 
+
+1. Create a Secret (or use an existing one). Multiple Pods can reference the same Secret.
+2. Modify your Pod definition in each container that you wish to consume the value of a secret key to add an environment variable for each secret key you wish to consume. 
+3. Secrets as environment variable so we don't have to expose our sensitive data in docker container,( or we push our docker image to public repo then sensitive data will be exposed.) 
+If we hard the credentials inside the container  and want to change the credentials then we have to create of new image but in secrets we can alter our credentials without much 
+
+## Using Secrets as volume/file mount : 
+
+1. If you want to access data from a Secret in a Pod, one way to do that is to have Kubernetes make the value of that Secret be available as a file inside the filesystem of one or more of the Pod's containers.
+2. Here secrets are mount as filesystem at the mentioned path inside the container. 
+3. If we update the secrets after the pod are spin then all the changes done in the secrets will be visible inside pod at volume mount path. 
+
+***********************************************************************************************
+>> kube 15 : Using configmaps in Kubernetes Cluster
+***********************************************************************************************
+
+## Configmaps:  
+>> A ConfigMap is an API object used to store non-confidential data in key-value pairs. 
+>> Pods can consume ConfigMaps as environment variables, command-line arguments, or as configuration files in a volume.
+>> A ConfigMap allows you to decouple environment-specific configuration from your container images, so that your applications are easily portable.
+
+Note : ConfigMap does not provide secrecy or encryption. If the data you want to store are confidential, use a Secret rather than a ConfigMap 
+Note : The data stored in a ConfigMap cannot exceed 1 MiB. 
+Note: The spec of a static Pod cannot refer to a ConfigMap or any other API objects. 
+
+### What is static  Pod? 
+A pod managed directly by the kubelet daemon on a specfic node. 
+
+## Impertive way to create configmap 
+
+kubectl create configmap configmap-name --from-literal=key=value
+
+Using file: you can define all config value in a file and pass that file at run time. 
+
+kubectl  create configmap configmap-name --from-file=/path/to/file 
+
+## Methods by which ConfigMap can be utilised :
+Using configMap as environment variables.
+Using Secrets as volume/file mount
+
+***********************************************************************************************
+>> kube 15.1 : Immutable secrets and configmap |How to use them . 
+***********************************************************************************************
+
+Immutable means static , In reference to secrets and configmaps, immutable secrets/configmaps means we can't  alter the value to these secrets/configmap in its lifecycle, only change we can do is to  terminated them. 
+
+## Note: Immutable secret/configmap are introduced in kubernets v1.18 and enable by default in v1.19 , if we are using kubernetes v1.18 or lower then we have to enable feaute gate ImmutableEphemerableVolumes. 
+
+## Why to use Immutable secrets? 
+1. Protects you from accidental (or unwanted) updates that could cause applications outages
+2. Immutable Secrets improves the performance of your cluster by significantly reducing load on kube-apiserver.
+3. The kubelet does not need to maintain a [watch] on any Secrets that are marked as immutable.
+
+***********************************************************************************************
+>> kube 12 : Init Containers in kubernetes 
+***********************************************************************************************
+
+## Init containers : 
+>> Link:  https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+
+Init Containers are special container that run for completion before the actual container. 
+It can contains utilities or setup scripts not present in container image. 
+
+## Init containers are exactly like regular containers, except:
+
+1. Init containers always run to completion.
+2. Each init container must complete successfully before the next one starts.(runs in sequential manner)
+
+If init container fails (for whatssoever reason), the kubelet repeatedly restart the init container until its succeeds.
+To avoid multiple restart of init container we can set restartPolicy to never and if init container fails ,then kubernets treats overall pod as failure.    
+
+# Note : init containers do not support lifecycle, livenessProbe, readinessProbe, or startupProbe because they must run to completion before the Pod can be ready.
+
+## Advantages of Init container 
+1. Init containers can contain utilities or custom code for setup that are not present in an app image.
+2. The application image builder and deployer roles can work independently without the need to jointly build a single app image.
+3. Init containers can run with a different view of the filesystem than app containers in the same Pod. Consequently, they can be given access to Secrets that app containers cannot access.
+4. Init container can be used as prerequisite , as it run for completion otherwise kuberenets will let app container to start.
+5. By using init we can keep unnecessary tool separate and limit the attack surface of your app container image. 
+
+***********************************************************************************************
+>> kube 13 :  Using Persistent Volumes and Claims in Kubernetes Cluster
+***********************************************************************************************
+## Why do we need persistent volume?
+Lifecycle of pod is very inconsistent, and data stored in container in the pod will be lost once pod gets killed. 
+In order to preserve the data of container in pod we use persistent volume. 
+Once the persistent volume is provisioned then we can use it via pvc (persistent volume claim)
+For eg: let assume we have pv of 10GB , and we need pv of 1GB ,then 1GB (out of 10GB) of pv will be allocated to us . And it can't be used/claimed by anyone else unless we using it. 
+
+
+## Persistent Volume ane claims steps: 
+1. create a persistent volume.
+2. create a persistent volume claim 
+3. Pod that uses the pvc ---> pv 
+
+
+## ReclaimPolicy of PV
+1. Retain ---> Default --> once pod is delete your data will remain intact and no other pvc can claim . 
+2. Recycle --> used for dynamic provisioning (not used  anyone more )
+3. Delete  --> Once we delete pod and pvc then it will delete pv data as well (only if directory is under /tmp directory). 
+
+## Access mode of PV:
+1. RWO (Read write once) --> only first node pods can read and write and rest other nodes can only read. 
+2. RWM (Read write many) --> multiple node pods can read and write. 
+3. RO (Read only) --> only able to read across multiple nodes. 
+
+Note : Hostpath is not used in production as filesystem is mounted inside a particular node(volume is specfic to node).  
+
+***********************************************************************************************
+>> Kube 16 : Using Resource Quotas & Limits in Kubernetes Cluster
+***********************************************************************************************
+
+## Why do we need Resource quotas and limits in Kubernetes?
+>> In prod environment there will be different team working at same cluster , if resource quotas and limits are not implemented than there might be a chance of undistributed resource among different teams. 
+>> In order to prevent a certain team/user to take-up all resource we use resource quotas and limit. 
+>> Resource quotas and limits are implemented with the help of namespaces. 
+>> Resource quotas and limits are applied to namespace not to entire cluster. 
+
+## Resource quotas: 
+>> With resource quotas we can limit the number of resources/components to be created in a namespace. 
+   for eg : With the help of resource quotas , we can limit the no. pod that can be spin in namespace. for instance let’s assume the limit is 10 then, we can't spin more than 10 pod in that namespace. 
+
+## Resource limit:
+>> Resource limits are applied to cpu, memory ,storage. 
+>> It will restrict the resource to exceed the limit of assigned cpu, memory or storage. 
+  for eg : if we implement the resource limit(memory) of 500 MB to a namespace, it means all the resource combine in that namespace can't utilise memory of more than 500MB. 
+
+# Note: If we have resource limit set to a namespace then we have to mention limit is our pod/deployment files as well, otherwise it won't let you create the pod or deployment. 
+
+>> To avoid mentioning limits in every resource yaml file , we can set default limit range . If limit range is not mentioned then its take up the default limit. 
+
+***********************************************************************************************
+Kube 19 : Performing Rolling Updates in Kubernetes
+***********************************************************************************************
+
+## Updating an application: 
+>> Updating an already running application can be a tedious task. As it may result in downtime of our application which is not ideal in such a cut throat competitive world. 
+>> Kubernetes deployment strategies allow us to update ours running application with zero downtime. 
+>> Rolling update is a default deployment strategy used in Kubernetes. 
+## Various deployment strategies available in Kubernetes
+1. Recreate: It will release the new update and terminate the old one. this procedure will result in downtime and ideally not used in production. 
+2. Rolling : It is default deployment strategy ,release a new version on a rolling update fashion, one after the other.
+3. Blue/green: Release a new version alongside the old version then switch traffic.
+4. Canary: release a new version to a subset of users, then proceed to a full rollout.
+
+## Terms used in strategy definition inside deployment manifest: 
+1. type: Define type of strategy used for updation of application. 
+2. maxSurge: Number of pods that be increased in the cluster during updation of an application. 
+3. maxUnavailable: Number of pods that can be taken down/unavailable during update. 
+4. minReadySeconds: Time taken by pods to get in ready state. 
+5. revisionHistoryLimit: Number of versions of update maintained by the cluster, default value is 10. 
+
+## Commands
+>> command to check rollout status : kubectl rollout status deployment deployment-name
+>> command to check rollout history : kubectl rollout history deployment deployment-name
+>> command to check rollout history with specifc revision: kubectl rollout history deployment deployment-name --revision revision-number
+>> command to rollout deployment via imperative approach : kubectl set image deployment myapp-deployment nginx-container=nginx:1.15
+>> command to update change-cause in rollout history: kubectl annotate deployment deployment-name kubernetes.io/change-cause="Need to mention cause here"
+>> command to add change-use in rollout without annotate: kubectl set image deployment myapp-deployment nginx-container=1.15 --record=true
+>> command to undo rollout: kubectl rollout undo deployment deployment-name 
+>> command to undo rollout to specific version: kubectl rollout undo deployment deployment-name --to-revision=revision_number
+>> command to pause rollout: kubectl rollout pause depolyment deployment-name
+>> command to resume rollout: kubectl rollout resume deployment deployment-name
+
+***********************************************************************************************
+Static Pods in Kubernetes
+***********************************************************************************************
+## What is static Pods and why its required? 
+
+>> Static pods are the pods which is directly managed by kubelet without any intervention/guidance from the control plane.
+>> Generally pods in Kubernetes cluster are managed by control plane but that's not the case with static pods (which is managed by kubelet).If the static pod crashes, kubelet restarts them
+>>  Kubelet tries to create mirrors pod (an object of API sever which keep track of static pods) on api server by which static pods are visible from control plane but can't be controlled from there. 
+>> Static pod is required when a pod is not part of any cluster but it’s still need to run a pod.
+>> Static pods are usually used by software bootstrapping kubernetes itself. For example, kubeadm uses static pods to bringup Kubernetes control plane components like api-server, controller-manager as static pods.
+
+## Create static pods 
+1. Choose a node where you want to run the static Pod.
+2. Choose a directory, say /etc/kubernetes/manifests and place a web server Pod definition there, for example /etc/kubernetes/manifests/static-web.yaml.
+You can choose any directory to keep pod definition, need to update the kubelet service file with --pod-manifest-path=/path/to/the/file/
+
+***********************************************************************************************
+Helm 
+***********************************************************************************************
+## What is Helm
+>> Helm is a package manager for Kubernetes. 
+>> Like package manager in linux distribution , helm is take care all the dependencies required to run the application. 
+>> Working with individual components of Kubernetes such  as deployments, secrets, persistent volume etc are pretty straight forward , but application may required different component to club together to run properly. 
+>> And deploying each component can be a tedious task. 
+>> Helm will club the components required , it is achieved by the helm chart( where all the required components are  club together.) 
+>> Helm chart can be compared to ansible-playboob/role, where we defined all the tasks and run the role/playbook on multiple hosts.Same can be achieved with respect with helm, once your helm chart is ready we can deploy that helm chart at multiple clusters with ease. 
+>> We can create your own helm chart or can use already available helm charts at public repos. 
+
+## Command to install helm chart in kubernetes cluster:
+
+helm install local-release-name provider/chart-name  
+for eg: helm install demo-release bitnami/wordpress
+>> here  demo-release --> local-release-name  , bitnami--> provider , wordpress --> chart-name. 
+
+## Command to uninstall/remove helm chart
+
+helm uninstall local-relase-name 
+for eg: helm uninstall demo-release 
+Here demo-release  ---> local-release-name 
+
+## Installation of Helm CLI on your work station.
+
+Installation of Helm CLI can be done using different methods and we can install  as per likings by following their official documentation i.e.  
+ 
+Link : https://helm.sh/docs/intro/install/ 
+
+***********************************************************************************************
+Services in Kubernetes
+***********************************************************************************************
+## Services in Kubernetes
+
+>> Kubernetes service can act as abstration which can provide a single IP or DNS through which pods can be accessed. 
+>> Service allow us to perform lot of operations like load balancing, scaling of pods and others. 
+>> Without the kubernetes service, it will very difficult from various pods (frontend and backend) to communicate between themself as its IPs are keeping changing as pods lifecycle are highly unpredicted. 
+
+## Types of services in Kubernetes
+1. NodePort
+2. ClusterIP
+3. Load Balancer
+
+
+## ClusterIP:
+>> Whenever service type is clusterIP, an internal IP address is assigned to the service. 
+>> Since internal  clusterIP is assigned , it can only be reachable from within the cluster. 
+>> This is default Service type  
+
+## NodePort: 
+>> Nodeport exposes the service on each Node's IP at a static port(NodePort).
+>> We can able to contact NodePort service, from outside the cluster, by requesting <WorkerIP>:<NodePort>
+>> For NodePort service,default port range (30000-32767).
+>> NodePort services allow outside world to use our end application inside cluster , which was not possbile if we are using clusterIP. 
+
+## Load Balancer:
+>> One of main challenge come while using nodeport service is that we need to mention the port number for accessing the end application. 
+>> For end users it's not ideal to remember nodeport port for every application/website they used , to overcome we use loadbalancer serivce. 
+>> LoadBalancer make to nodePort service under the hood.And take care of routing requests to the service/application. 
+
+***********************************************************************************************
+Ingress 
+***********************************************************************************************
+
+## Why do we need Ingress:
+>>  Main problem with load  balancer is  it can route traffic to single service, and if we have multiple service  in a cluster load balancer is not able to route the  traffic to desired service. 
+>>  One  can argue  , we can have multiple load balancer for different services. It is  possible to achieve but it  will have deep impact on your pocket. 
+>>  Ingress is a cost effective approach to serve multiple services . 
+
+## Kubernetes ingress:
+>> Kubernetes ingress is a collection of routing rules which governs how external users access the service running within the Kubernetes cluster. 
+
+## Features of ingress 
+1. Load Balancing
+2. SSL Termination 
+3. Name-based virtual hosting
+
+## Components of Ingress
+1. Ingress Resource : Set of routing rules based on which traffic is routed to a service. 
+2. Ingress Controller : It take care of layer 7 proxy to implement ingress rules. 
+
+Note : You must have an ingress controller to satisfy an ingress rules.Only creating ingress resource has no effect. 
+
+***********************************************************************************************
+Service account
+***********************************************************************************************
+
+## Service account: 
+>> Kubernetes  cluster have two type of users:
+1. Normal users : Users by which we create various Kubernetes components such as deployment, pod, replicaset etc. 
+2.  Service account : Service account allows pod to communicate with API server. 
+   for eg : When Pod want to retrieve the some information from the API server then API server will authenticate first before its gave information to the pod. 
+   Service account will be added to pod which help it  get  authenticate and retrieve the information. 
+## Note : Service accounts are namespace specific , whenever a namespace is created a default service account is created along with it. If no service account is associated with pod than default service account will get attached  with the pod. 
+## Note: Each service accounts have different roles attached to it. For eg: roles to get secrets or roles modify/delete secrets etc. 
+## Note: Every service account is associated with secrets. 
+
+# Commands
+>> command to get service account : kubectl get service account 
+>> command to create service account: kubectl create sa saname
+>> command to attach a non-default sa: kubectl run podname --image=imagename --overrides='{ "spec": { "serviceAccount": "your-sa-here" }  }' sh
+
+***********************************************************************************************
+Named Port 
+***********************************************************************************************
+
+##  Named Port: 
+>> We can also assoicate a name associated with the port. 
+>> Named port must be unique within the pod. 
+>> Usually,we refer to a target port by its number. But you can give a specific name to each pod`s port and refer to this name in your service specification.
+
+***********************************************************************************************
+Kuberenetes events
+***********************************************************************************************
+
+## Kubernetes events 
+>> Kubernetes events are created when other resources have state changes, errors or other messages that should be broadcast to the system. 
+>> Kuberenetes events gave insight of what happening inside the cluster. 
+>> Kubernetes events are namespace specific. 
+>> All the events are stored in the master server.
+>> To avoid filling of master's disk space, retention policy is enforced. 
+>> Default time to retain events in kubernetes cluster is of 1 hour. 
+
+## Commands related with events
+>> Command to check events: kubectl get events
+>> command to check events of specific namespace: kubectl get events -n namespace-name
+>> command to check events of all namespace: kubectl get events --all-namespaces 
+
+## Field selector 
+## Why do we need field selector?
+>> While using Kubernetes events , sometimes we don't want to see all the events rather we are looking for a specific events. 
+>> we can use field selector in case we want to filter of specific pod, replica-set ,deployment etc.
+>> Field selector will help us to filter the output and shows us only requested information. 
+>> It become handy when we are debugging any issue.  
+
+## Command 
+kubectl get pod --all-namespaces  --field-selector metadata.namespace!=default
+>> Above command will list of all the pods in cluster except pods in default namespace. 
+
+
+***********************************************************************************************
+Kubernetes is Deprecating Docker?!
+***********************************************************************************************
+## Kubernetes is Deprecating Docker?
+>> Kubernetes and Docker seems like strong team mates, one has expertise in converting your end application into containers and other  has expertise in managing/orchestrate those containers. 
+>> If we see from the outside it really doesn't make any sense why Kubernetes is deprecating docker support. 
+>> To understand why this happened , we need to understand the working of both of these tools under the hood.
+
+## Why is Kubernetes Deprecating Docker?
+>> Kubernetes does not actually handle the process of running containers on a machine. Instead, it relies on another piece of software called a container runtime.
+>> The container runtime runs containers on a host, and Kubernetes tells the container runtime on each host what to do.
+>> Kubernetes works with all container runtimes that implement a standard known as the Container Runtime Interface (CRI).
+>> Docker does not implement the Container Runtime Interface (CRI). Kubernetes implemented the Docker shim, an additional layer to serve as an interface between Kubernetes and Docker. 
+>> When Kubernetes was launched in the market, there was no major player other than docker and at that time its make sense that you are spending our resources to make docker compatible with Kubernetes. 
+>> Now, however, there are plenty of runtimes available that implement the CRI, and it no longer makes sense for Kubernetes to maintain special support for Docker.
+>> Docker is not actually a container runtime! It’s actually a collection of tools that sits on top of a container runtime called containerd.
+>> So its make sense that Kubernetes can easily bypass Docker(middle man) and use containerd as container runtime . 
+>>  containerd or CRI-O emerges as the major alternatives which will replace docker in Container runtime interface..

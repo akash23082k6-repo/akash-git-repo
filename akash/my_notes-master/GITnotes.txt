@@ -1,0 +1,87 @@
+GIT :  It's a version control system, which allow different user to work parallely,without interfering each other work. 
+    :  It is distributed version control system, means each user have clone of the project/history of project locally on their system. 
+    :  It helpful is tracking any changes in the code . 
+    :  Committing new changes, branching, merging and comparing past versions are all optimized for performance.
+    :  Git focuses on the file content itself, to keep track of version history . 	
+
+Features of GIT :
+1 . Performance 
+2 . Security 
+3 . Flexibility 
+4 . Version control 
+
+>> To check GIT install properly : git --version
+>> To configure username  : git config --global user.name " User Name "
+>> To configure email     : git config --global user.email " email id "
+>> To configure username and email id using vim : git config --global --edit 
+
+>> To make any directory  a GIT repo " first change to that directory and then use below command "
+                    : git init 
+
+>> To check changes in GIT Repo : git status 
+
+
+##### working directory -----git add --- > staging area -----git commit---> Repository 
+
+
+>> To send the file to staging area : git add filename    ... then check status with git status 
+                                      git add .      ---- to send all file of current directory and subdirectory to staging area at once . 
+									  git add --all  -- to send all file to stataging area of the directory and subdirectory but not adding home directory file. 
+									  git add *      -- to send all file to staging area except deleted file. 
+>> To commit a file                 : git commit -m "initial commit" 
+
+>> To roll back from statging to working directory : git reset 
+>> to rollback to staging after commit             :  git reset HEAD~
+>> To check no. of commits : git log 
+
+******************************************************************************************************************************
+
+## Diff , remove and undo 
+
+>> To check changes in file : git diff filename     Note : Difference/changes can be checked only in staging area. 
+>> To undo the changes in the file :  git reset --hard
+>> To delete/remove file : git rm filename 
+                         : git rm -f filename     --- to remove file forcefully .
+                         : git rm -r directory    -- to remove entire directory . 						 
+*******************************************************************************************************************************************
+## Branching and Merging 
+
+>> To change/move to different branch/commit/version : get checkout hash code/branchname 
+
+>> To create branch and move to that branch : git checkout -b branch/featurename 
+
+>> To check no. of branch :  git branch 
+>> To create different branch : git branch branchname 
+
+>> To Merge branch  with other brach : First switch to the branch you want to merge and then use below command 
+                                     : git merge branchname 
+									 
+>> To avoid adding file to git environment : touch . gitignore    then add the filename in gitignore file . 
+                                           
+										   
+										   
+*******************************************Things to learn**********************************
+git fetch : it will add  file or changes to local repo but not reflected on working directory , do that need to use git merge. 	
+git pull  : it will add  file or changes to local repo as well as working directory , git fetch + git pull = git pull 
+git push  : It will add changes in local repo to remote repo		
+
+
+*******************************************************************************************************************
+
+git stash  : when you are not ready to move your changes to staging your .. then you can add those change to stash .
+
+>>git stash command :
+
+git stash save "pointer name"   -- to create stash
+git stash list                  -- to list of stash 
+git stash apply stash@{pointer name} -- to apply stash to working directory . 
+           Note : you can apply only one stash at time , if you want to add another stash then you have to add and commit those changes . 
+
+git stash pop        --- to apply your last stash .. LIFO and delete stash from stash list 
+git stash drop       -- It will clear the last stash .. LIFO
+git stash clear      -- to clear all the stash at once ,it can't be recover once stash is cleared. 
+git stash show       -- It highlights the changes in stash 
+
+
+
+

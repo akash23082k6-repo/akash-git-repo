@@ -1,0 +1,247 @@
+>> Variable 
+
+Note : variable.tf file will contains default value , this file contain default value. 
+
+Note : terraform.tfvars --> this file have more precendence over variable.tf , if any variable have value in this file , it will over write value of variable.tf. 
+
+## To set enviroment variable in terraform ( windows )
+
+setx TF_VAR_variablename value 
+
+Note : in windows after setting enviroment variable, you need to reload the terminal. 
+
+## To set enviroment variable in terraform ( linux and macos )
+
+export TF_VAR_variablename = "value" 
+
+echo TF_VAR_variablename    -- to check the enviroment variable 
+
+
+***********************************************************************************************************
+
+>> Data type in variable 
+
+for eg : variable "image_id"{
+type = string 
+}
+
+Note : The type argument in a variable allow  you to restrict the type value that will accepted the value for a variable. 
+
+Note : If no type constraint is defined then a value of any type is accepted. 
+
+
+## Data type is variable
+
+1. string ---> sequence of unicode characters representing some text . for eg "hello"
+2. list   ---> sequenctial list of value identifed by their position. starts with 0 . it is similar to array .
+3. map    ---> a group of value identifed by name label. like { name="Neha" , age =25 }
+4. number -- > for example 200.
+
+**************************************************************************************************************************
+>> Fetching data from map and list 
+
+for eg : fetching instance type in below example
+
+resource "aws_instance" "my_ec2_instance" {
+  ami                         = var.ami_id
+  instance_type               = var.inst_type
+  
+}
+
+variable "list"{
+type = list
+default = ["t2.micro","t2.medium","t3.micro"]
+}
+
+variable "types"{
+  type = map
+   default = {
+    micro_instance = "t2.micro"
+    medium_instance = "t2.medium"
+    small_instance = "t3.small"
+  }
+}
+
+## In case of using map 
+
+resource "aws_instance" "my_ec2_instance" {
+  ami                         = var.ami_id
+  instance_type               = var.types["micro_instance"]
+
+
+## In case of using list
+
+resource "aws_instance" "my_ec2_instance" {
+  ami                         = var.ami_id
+  instance_type               = var.list[0]
+
+****************************************************************************************************************************************************
+
+>> Terraform function 
+
+The terraform function doesn't support user defined function, so build in terraform function are available for use. 
+
+Below are some build-in terraform function. 
+
+1. Numeric
+2. String
+3. Collection
+4. Encoding 
+5. Filesystem
+6. Date and time 
+7. Hash and crypto
+8. IP Network 
+9. Type conversion 
+
+Note : Above are high level function and they have sub function under them. 
+
+************************************************************************************************************************************************
+
+>> Debugging in terraform 
+
+Terraform has detailed logs which can be enabled by settings the TF_LOG enviroment to any value. 
+
+You can set TF_LOG to one of the log level TRACE,DEBUG,INFO,WARN or ERROR to change the vebosity  of the logs. 
+
+for eg: export TF_LOG=TRACE
+
+to store log in particular file : TF_LOG_PATH= path_to_file 
+
+*****************************************************************************************************************************************
+
+>> Terraform fmt and Terraform validate 
+
+terraform fmt : it will check the identation and format of code . 
+
+>> Terraform validate : it's check whether a configuration is syntactically valid. 
+
+*********************************************************************************************************************
+
+>> Terraform taint 
+
+The terraform taint command manually marks terraform-managed resource as taint ,forcing it to be destroyed and recreate in next apply.
+
+syntax : terraform taint resourname.name  
+
+*************************************************************************************************************************
+>> Spalat expression 
+
+It allows us to get a list of all the attributes. 
+
+**************************************************************************************************************************
+
+>> Saving terraform plan to a file 
+
+It will allow to save a certain configuration in a binary which can be used later to create certain infra, even if terraform code is changed. 
+
+terraform plan -out=filename
+
+terrafrom apply filename 
+
+**********************************************************************************************************************************
+>> Dealing with large infrastructure 
+
+when we are dealing with larger infrastructure, we will face the issue related to API limits. 
+
+Switch to smaller configuration which can be applied independently.
+
+To prevent terraform from quering the current state during operation like terraform plan , 
+this can be achieved with -refresh=false flag. 
+
+specify the target : -target=resource. 
+
+**********************************************************************************************************************8
+
+>> ZIPMAP function :
+
+It constructs a map from a list of keys and corresponding list of value . 
+
+zipmap ("keys",value")
+
+Note : It can be used in displaying output. 
+
+************************************************************************************************************
+
+>> Terraform provisioners 
+
+Provisioners are used to execute the scripts on local or remote as a part of resource creation or destruction . 
+
+# Terraform provisioners
+
+local-exec  -- help to execute scripts on local server. used to run ansible playbook. 
+remote-exec -- help to execute scripts on remote sever. 
+
+Note : Above mentioned provisioners are not the only provisioners available, but these two are widely used. 
+
+# Types of Terraform provisioners
+1. creation time provisioners : It run only during creation, not during updating or any other lifecycle. 
+                                If a creation time provisioner fails, the resource is maked as tainted 
+2. destroy time provisioners : It's run before the resource is destroyed. 
+
+## Terraform provisioner failure behaviour 
+
+continue : ignore the error and continue with creation or destruction. 
+fail : default behaviour, and it's mark the resource tainted. 
+
+*************************************************************************************************************************
+
+>> DRY Principle : 
+
+In software engineering , don't repeat yourself(DRY) is a principle aimed to reduced repetition of software patterns. 
+
+>> Terraform module 
+
+We can centralize the terraform resource and can call out from TF files whenever required. 
+
+***********************************************************************************************************************
+>> Terraform workspace 
+
+Terraform allows us to have multiple workspace, with each workspace we can have different set of enviroment variable associated with it . 
+
+## workspace commands
+
+1. terraform workspace -help -- to get help 
+2. terraform workspace -- it show global options available in terraform workspace. 
+3. terraform workspace list -- to list out all available workspace. 
+4. terraform workspace create workspacename -- to create workspace. 
+5. terraform workspace select workspacename -- to switch to particular workspace. 
+
+*********************************************************************************************************************************************
+
+>> Terraform remote backend
+
+Commiting tfstate files to git repo are not one of the best practice , in order to avoid pushing tfstate files to remote git repo we can store them at centralize location (remote backend ) which is not git or any version control system. 
+
+There are many remote backend support by terraform, S3 is one of them. 
+
+## Backend type 
+
+1. standard backend type : state storage and locking 
+2. Enhanced backend type : all features of standard  + remote management. 
+
+Note : By terraform will store the file locally . 
+
+
+
+***********************************************************************************************************************************************************************************************
+
+>> Terraform module calling form private git repo
+
+reference : https://stackoverflow.com/questions/61100076/terraform-module-in-github-private-repo
+
+1. Set up your ssh keys; make sure that your ~/.ssh/config file has a block like this:
+Host USERNAME.github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_rsa 
+	
+	
+2. Add this to your .tf file:
+
+module "name_of_module" {
+  source = "git@USERNAME.github.com:USERNAME/REPONAME.git//SUBDIR"
+  ...
+}	
+
+***************************************************************************************************************************************************************************************************
+

@@ -1,0 +1,34 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: emqx.rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: emqx.rules
+      rules:
+        - alert: Disk usage of emqx instance is above 90 for 5min
+          expr: (1 -node_filesystem_free_bytes{mountpoint ="/",job="emqx-node-metrics"} / node_filesystem_size_bytes{mountpoint ="/",job="emqx-node-metrics"}) *100 > 90
+          labels: 
+            severity: Warning
+          annotations:
+            message: "Disk usage is over 90% for emqx instance {{ $labels.instance }} for over 5min"
+            description: "Disk usage is > 90%  VALUE = {{ $value }}  for instance {{ $labels.instance }}"
+
+        - alert: CPU usage over 80% of emqx instance for 5min
+          expr: (1 - avg(rate(node_cpu_seconds_total{job=~"emqx-node-metrics",mode="idle"}[5m])) by (instance,job))* 100 > 80
+          for: 5m
+          labels:
+            severity: Warning
+          annotations:
+             message: "CPU usage is over 80% for emqx instance {{ $labels.instance }} for over 5min"
+             description: "CPU load is > 80%  VALUE = {{ $value }} for instance {{ $labels.instance }}"
+
+        - alert: Memory usage is above 80% of emqx instance for 2min
+          expr: ((sum(node_memory_MemTotal_bytes{job=~"emqx-node-metrics"}) by (job,instance) -sum(node_memory_MemAvailable_bytes{job=~"emqx-node-metrics"}) by (job,instance) ) / sum(node_memory_MemTotal_bytes{job=~"emqx-node-metrics"}) by (job,instance)) *100 > 80
+          for: 2m
+          labels:
+            severity: Warning
+          annotations:
+            message: "Memory usage is over 80% for emqx instance {{ $labels.instance }} for over 2min"
+            description: "Memory usage  is > 80%  VALUE = {{ $value }}  for instance {{ $labels.instance }}"

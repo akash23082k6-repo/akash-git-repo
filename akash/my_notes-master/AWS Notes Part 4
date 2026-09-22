@@ -1,0 +1,409 @@
+
+** Identity and Managemnt system ( IAM )
+>> IAM refers to a framework or polocies  for ensuring that proper people in the organisation have the appropriate access to technoligies resoureces.
+                                                       or
+>> IAM ensure authoriesed users have access to AWS web services. 
+Note : Don't use root account , for provdiving  access to other users create another account with all access. 
+
+*****************************************************************************************************************************************
+IAM parameter and checks
+>> IAM user limit is 5000 per account , and can create 10 users at a time. 
+>> 300 group per account. 
+>> Limited to 1000 IAM roles under AWS account.
+>> Default limit of managed polices attached to IAM roles are 10. 
+>>  IAM user can be member of 10 group . 
+>> Can assign two access key to an user. 
+Note : All above mention  limits are  default . can be extended via requesting AWS. 
+													   
+													   
+IAM 
+1. Shared access with same account: create  new user account with one root account , so we don't have shared root account credentials. 
+2. Granular permission for access : granting different level access to different users as per role in the organisation.
+3. Secure access to AWS application : to give secure access to AWS application . for eg : give access to EC2 instance but not to S3 bucket then he can access only EC2 instance.
+4. Multifactor authentication( MFA ) : MFA to provide extra level of security for your account. for eg : OTP for bank money transfer, even we have account users and password but OTP require to complete money transfer
+5. Identity Federation : using existing account to create new account : for eg : login in some account via google account or via facebook. 
+6. Identity information for assurance : for log records 
+7. PCI- DSS complance : For online payment rule regulations : for eg some save card. 
+8. Eventualy consistent : highly available : 
+9: Free to use : IAM is free to use.  													   
+													   
+*********************************************************************************************************************************
+>> IAM terms 
+
+1. Principle -- principle is a working entites at the resource. means karta in hindi . for eg : user , application 
+2. Request -- Request send via  principle.
+3. Authenication -- Valid user. username and password. 
+4. Authorization -- level of clearance . 
+5. Action/operation -- -- operation requested by principle. 
+6. Resources -- action /operation performed at resources. 
+
+
+1. Principle 
+>> A principle is user or application that can make request for action or operation on AWS resource. 
+>> Your Adminstrtive user is your first principle. 
+>> You can allow user and services to assume  a role. 
+>> IAM user, roles, Federated user and application are all AWS principle. 
+>> You can  support federated user/user from another organisation or progmmatic access/cli to allow user to access  your AWS account. 
+
+
+2. Request 
+>> 	When a principle tries to use AWS managment console , AWS API or AWS CLI  then principle sends a request to AWS, request contains following 
+      a. actions -- that principle wants to perform.
+      b. resource -- upon which action are performed.
+      c. principle --
+      d. enviroment data -- your IP address and your clearance level
+      e. resource data 
+	  
+ >> Request context : Before AWS evalute or authorized a request , it will gather request information. 
+      * Principle -- wheather principle is authorized or not and it's clearance level. 
+	  * Enviromental data -- IP address , user agent , SSL enabled and time of day. 
+	  * Resources data -- data releated to resourece that is being requested. 
+	  
+3. Authenication 
+>> A principle send request must be authenticated  to send request to AWS. 
+>> Some AWS services like AWS S3 allows request  from anonyomous  user, they are exception to the role. 
+>> To authenticate from console as root user, we must sign in with user name and password. 
+>> To access via CLI , then need to have access and secret key. 
+>> sometime you must provide additional security information like MFA( Multifactor authentication)   
+
+4. Authorization  : 
+>> To authorize a request , IAM uses value from request context to check for matching polices wheather to allow or deny a request. 
+>> IAM polices are stored in IAM as JSON documents and specify the permission that are allowed or denied. 
+>> user based policies specify permission  for principle. 
+
+Note : By default , only AWS root user have access to all the resources in the account. 
+       IAM user ,by default access to  all resource are denied. 
+
+>> Resource based polices -- Implying polices at resource -- for eg applying only read permission at S3 bucket, then principle can only need the content in bucket.
+>> IAM check each policy that matches the context of your request. 
+>> If a single polices includes a denied action, then IAM denies entire request.This is called explict deny. 
+ 
+*** The evaluation  logic follows  these rules 
+>> By default , all request are denied . 
+>> An explict allow override the default. 
+>> An explict deny override any allow. 
+>> An explict deny is more powerful than explict allow. 
+
+5. Action/operation 
+>> It is defined by services are the things that can you can do to a resources ie viewing,editing, creating or deleting. 
+>> IAM supports approax 40 actions for user. 
+>> Any action which are not explicit allow are denied by default. 
+
+6. Resources
+>> It is entity within services are resource,for eg , S3 , EC2 instance. 
+>> AWS services defined a set of action that can be performed at resource. 
+>> If unreleated request to perform a action is requested then AWS will deny that request. for eg : request to install OS at S3. 
+>> When you provide permission using identity based policy  in IAM,then you provide access to resource within the same account. 
+
+
+***********************************************************************************************************************************************************************
+
+>> You can create a new IAM policy in AWS managment console using one of following methods. 
+1.  JSON -- you can create your own JSON syntax. 
+2.  Visual editor -- You can create new policy with the help of visul editor, no need to having understanding of any programming language. 
+3. Import -- Means policy is already defined at some other resources  , you only importing the already prepared policies. 
+
+
+**********************************************************************************************************************************************************************
+** Identity federation 
+
+>> If your user have way to be authenicated such as  authentication through coperate network. 
+>> You can federate those user identites into AWS. 
+>> A user who is already logged to the corperate using their corperate identity . 
+>> The coperate can replace their existing identity with a temporary in your AWS account. 
+>> This user can work  in the AWS  management console. 
+>> Similarly , an application that the user is working with can be programmatic request using permission that you define. 
+													   
+													   
+													   
+*********************************************************************************************************************************************************************
+
+** Permission and Policies 
+>> IAM helps to define what a user is allowed to do in your account , often refer to as authorization . 
+>> Permission are often granted via policies that are created and attached to user, groups and roles. 
+
+Note : Policies applied to user, groups or roles are identity based policies or user based policies . 
+     : In identity based policies or user based policies , principle is not in the picture. 
+	 
+** Policies and users 
+
+>> By default , IAM user can't access anything in your account. 
+>> We grant access by defining or creating polices and then attaching those policies to user, group or roles. 
+>> Any action of resources which are not explictly allowed are denied by default. 
+
+
+
+** IAM multiple policies 
+>> User or group can have multiple policies that grant different permission. 
+>> In case of multiple policies attached to user then permission are calculated by the combination of those polices. 
+
+** Federated user and roles
+>> Federated user doesn't have permanent identity as of IAM user. 
+>> To grant permission to federated user we create role and attached them with federated user. 
+>> When federated user send request to access resources , then access are granted as per role attached to the user. 
+
+** Resource based polices 
+>> In some cases like S3  , you attach a policy to a resource , this is called Resource based polices 
+>> Resource based polices are different from user or identity based policies.
+    --> In Resource based polices , we specify what actions are permitted and what resources are affected. 
+	--> We explictly list , who is allowed access to resource ( Principle )
+>> Resource based polices specify principle. 
+
+
+** AWS recommandations 
+>> AWS recommands not to share root user credentials with anyone. 
+>> Not to use user root account for day to day work. 
+>> To avoid using root user on daily basics, create an IAM user who have all access . 
+   Note : IAM user with all access is not same as root user.  
+   
+*******************************************************************************************************************************************************
+
+** IAM roles 
+
+>> IAM roles are not usally defined for users rather it is attached to user who suppose to perform that role. 
+>> IAM can only possess one role at at time. 
+   for Eg: One IAM user who have developers role and require to perform testing role, then he has to give his developers role in order to possess testing role. 
+         : and other is assigned for limited time period and if required futher need to request again. 
+		 : Temporary role are accessed via temporary token . 
+
+
+>> Difference between IAM roles and resource based policies
+
+
+>> IAM role delegation
+
+  ** trusted and trusting account came is picture. 
+  ** trust is create from where resource is to access. 
+  ** while creating deleagation trust is created among two different account but not with user. 
+  ** In cross account permission, if IAM has to access resource from another account and roles are used then he has to give his current role. 
+       but if resource based policies is used then he doesn't have to give his current role. 
+  ** Major drawsback of resources based policies is , it can't get implemented at all resources
+     It can only get implemented at below resources
+	  1. Amazon S3 
+	  2. Amazon simple notification service
+	  3. Amazon simple queue service 
+	  4. Amazon glacier vault
+	  
+>> Inline policy : They are customize policies , where user are allowed or denied specify access to to resource in that policy. 
+
+
+
+*****************************************************************************************************************************************************************
+
+>> Data base 
+
+** Data -- Raw fact and figure about any object. it may or may not be revelant to the user. 
+
+** Database -- It is systmetic collection of data , database support data storage and data manipulation .for eg : facebook, amazon 
+
+** DBMS ( Datebase management system )  -- It is collection of program which enable it's user to access database , manipulate data , reporting of data . 
+   >> Types of DBMS 
+     1. Hierarchical 
+	 2. Network 
+	 3. Relational 
+	 4. Object oriented 
+	 
+** Relational Database : >> It is database structure which are interlinked with other database. 
+                         >> It has different table , which have atleast one or more unique or primary key. 
+						 >> In Relational database , all field should be filled can't left it empty . 
+						 >> It mainly used for online transation processing ( OLTP ) 
+						 >> for eg : MYSQL, oracle DBMS , IBM DB2 
+						 >> Relational database are read horizontally, a full record of user is called tuple/row. 
+						 >> Different field in table is called attributes , and it's contains same type of data. and individually doesn't make any sense. 
+						 >> Row of a table is also called record. 
+						 >> Scheme/design of database strictly define name of column, indexes and relation between them.
+						 >> Relational database can't scale out horizontally
+						 >> Virtually all relational database use SQL . 
+						 
+** Non Relational database :  >> It is database with no structure, means it is schmea free database 
+                              >> It is one primary key. 
+                              >> Low hardware cost.
+							  >> It is faster than relational database. because it doesn't required to fill all field.
+							  >> Horizontal scaling is possbile in non relational database, autoscaling is possbile. 
+							  >> Best suited for online anylatical processing . data warehouse. 
+							  >> Eg of non relational database : Mongo DB , Cassendra , dynamo DB , Pastegre , raven , Redis 
+							  
+** Type of non relational database : 
+                                    >> Columnar database -- cassendra, HBase -- store data column wise rather than row wise. 
+									>> Documents database -- MongoDB, CouchDB, RavenDB-- data stored in document format.
+									>> Key value database -- Redis, Riak, DynamoDB, Tokyocabinet -- used to maintain session in web application ,eg : shopping cart
+									>> Graph Based database-- Neo4J , Flock DB 
+									
+									
+*****************************************************************************************************************************************************************************************
+
+>> AWS Relational database services
+
+** Setting manged by AWS 
+1. Security and Patching 
+2. Automatic backup. 
+3. Software update for DB engine . 
+4. In case of automatic failure, and if  multiple AZ option was selected for database, then secondary DB will take over. 
+   Note : Secondary data will be created in same region but in different availablity zone. 
+5. By default every DB has weekly maintiance window ( Max 35 days ) 
+
+
+** Setting managed by users 
+1. Managing database settings. 
+2. Creating relational database schema. 
+3. Database performance tuning. 
+
+
+** Relational database options 
+1. MS SQL 
+2. MY SQL -- support 64 TB DB
+3. Oracle 
+4. Amazon Aurora -- High thoughput
+5. Postgre SQL -- highly reliable and stable 
+6. Maria DB -- MY SQL compartiable , 64 TB Database . 
+
+** Licensing option 
+1. BYOL -- Briong your own license 
+2. License from AWS on hourly basics 
+
+** RDS Limits 
+>> Upto 40 DB instance per account . 
+>> 10 out 40 DB instance from License from AWS. 
+>> 40 out 40 DB instance using BYOL 
+
+
+** RDS instance storage 
+>> Amazon uses EBS for DB and logs storage. 
+>> In RDS have only two type EBS storage available 
+   1. General purpose -- used for moderate load . min --20 GB, Max -- 16 TB 
+   2. Provisional IOPS RDS storage    --  use for high performance , limits : Min 100 GB, Max : 16 TB. 
+   
+   Note : In multiple AZ stanby storage , it's recommanded to use provisional IOPS RDS storage. 
+   
+** Templates available in RDS 
+1. Producation -- used for high availablity and consistent performance. 
+2. Dev/Test -- used for testing , outside production environment . 
+3. Free Tier -- used free tier to develop app , test existing app -- mainly used those who have free tier account, multiple AZ standby DB storage in not available here. 
+
+** DB instance type 
+
+1. standard class : Includes m series 
+                    Max 96 VCPU
+					384 GB RAM 
+					14000 MBPS -- throughput
+					
+2. Memory optimized : Includes r and x series 
+                         Max 96 VCPU
+						 768 GB RAM 
+						 14000 MBPS -- throghput
+						 
+3. Bustable Class : includes t series 
+                    Max 8 VCPU
+					32 GB RAM 
+					1500 MBPS - throughput
+					
+					
+*****************************************************************************************************************************************************************************************
+
+** What is Multiple ZA in RDS 
+
+>> You can select multiple AZ only during RDS DB instance launch . 
+>> RDS create standby in different AZ and configure synchronous replication between primary and standby DB instance. standy DB is five minutes behind primary. 
+>> You can't read /write standby/seconday  RDS DS instance storage . 
+>> You can't select standby RDS  availablity zone, but secondary RDS will be visible after it's creation.
+>> Depending upon the instance class , it may take one to few minutes for failover to standby instance. 
+>> AWS recommend to use provisional iops storage in multiple AZ. 
+   
+  Note : When standby instance take over , it will treated as primary storage and it's standby will be created in different AZ, however if failed primary storage came online within time then it will act as standby now. 
+
+
+** When multiple AZ triggers 
+1. In case of failure of primary DB instance failure 
+2. In case of AZ failure 
+3. Loss of network connectivity to primary DB . 
+4. Loss of primary EC2 instance failure. 
+5. EBS failure of primary DB instance. 
+6. Primary DB setting changed. 
+7. Patching of OS of DB instance . 
+8. Manual failover ( incase of rebooting ) 
+
+** setting to do to get seamless service during primary DB failover. 
+>> It is recommended to use of CNAME to refer your DB instance rather than it's IP address. 
+>> Because CNAME doesn't change  , because RDS endpoint doesn't change.   
+
+Note : Primary and standby have different IP address ,but have same CNAME or url address. 
+
+
+
+** RDS DB failover alerts 
+>> When RDS DB failover , it will send notification  via SNS ( simple notification service ) , it is chargeable service . 
+>> In API or CLI you can check logs of RDS DB for last 14 days whereas via AWS console logs for only one day is available. 
+>> In case on OS patching , system upgrades or DB scaling horizontally , then this happens at standby first, then at primary . 
+>> In multiple AZ , snapshot and automated backup are done at standby instance to I/O suspension on primary . 
+
+
+** Multiple AZ RDS deployment and maintenance 
+>> Firstly maintenance are performed at standby . 
+>> After maintenance of standby completed , it will became primary and other DB maintenance will take place. 
+>> Manually maintenance of DB RDS via AWS console 
+   RDS--> DBS instance--> Modify DB --> set DB Engine version 
+>> Software upgradation  are preformed at seconday and primary DB at the same time. It is done during maintenance window , when no . users accessing app is low and to avoid outage. 
+   Note : Maintenance window is not inculded in SLA. 
+   
+   
+** RDS backup  methods
+>> Automated Backup 
+>> Manual backup 
+>> Either you can take backup of entire DB instance or for DB. 
+>> You can create a storage volume snapshot of your entire DB instance . 
+   Note : Automated backup are stored at multiple AZ for data durability . 
+>> select --> automated backup at AWS consle. 
+>> automated backup are stored at S3. 
+>> Multiple AZ automated backup are taken from standby DB 
+>> DB instance must be in ACTIVE state at the time of automated backup. 
+  Note : In single DB , automated backup taken from it, it DB is not reachable during the time. 
+>> automated Backup time can be select by user. 
+>> No addtional cost for RDS automated backup. 
+>> Automated backup deleted at the time of DB instance deletion . 
+>> Outage occured if the automated retention period changes from zero to non zero value. 
+>> Retention period is 7 days by default. aws aurora -- 1 day via console 
+>> Retention period range 0-35 days 
+
+
+** Manul snapshot in RDS 
+>> In case of manual snapshot ,point in time recovery in not possible. 
+>> Manual snapshot is stored in S3. 
+>> Manual snapshot is not deleted automatically , when DB instance is deleted. Need to delete manually . 
+>> Take final snapshot before deleting RDS DB, for future reference. 
+>> Manual snapshot can be share directly with other AWS account users. 
+>> When DB is recovered from snapshot , then recovered DB has default intial settings . for eg old phone data transfer to new phone. 
+>> Manual DB snaphot can't be restored on existing running DB, it should be run on new DB instance. 
+>> Restoring from DB snapshot changes RDS instance endpoint ( url or IP address )  .
+>> At the time of restoring , you can change the storage  type .
+
+** DB encryption 
+>> You can't encrypt existing unencrypted DB instance. 
+>> To do that 
+   create new instance and while creating make it encrypted and migrate data to it. 
+   or 
+   You can take snapshot , and recovery from snapshot and keep it encrypted while recovery . 
+>> RDS supports encryption at rest for all DB engines using KMS. 
+
+** What actually encrypted when at rest 
+>> all it's snapshot. 
+>> Backup of DB . 
+>> Data on EBS volume. 
+>> Read replica created from the snapshot. 
+
+
+** RDS DB billing 
+>> No upfront cost. 
+>> You have for pay for  
+   1. DB instance hours 
+   2. Storage ( EBS volume ) 
+   3. Internet data transfer. 
+   4. Backup stroage ( S3 ) 
+   
+>> AWS also charge for 
+   1. Multi AZ  DB hours 
+   2. Provisioned storage 
+   3. Double write I/O
+   4. You are not charged for DB data transfer during replication from primary to standby. 
+   
+
+       

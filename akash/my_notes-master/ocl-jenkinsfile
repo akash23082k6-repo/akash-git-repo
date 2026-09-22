@@ -1,0 +1,72 @@
+pipeline {
+     agent any
+         stages {
+             stage('Parameters'){
+                 steps {
+                     script {
+                     properties([
+                             parameters([
+                                 [$class: 'ChoiceParameter',
+                                     choiceType: 'PT_RADIO',
+                                     description: 'Select the Environemnt from the Dropdown List',
+                                     filterLength: 1,
+                                     filterable: false,
+                                     name: 'env',
+                                     script: [
+                                         $class: 'GroovyScript',
+                                         fallbackScript: [
+                                             classpath: [],
+                                             sandbox: false,
+                                             script:
+                                                 "return['Could not get The environemnts']"
+                                         ],
+                                         script: [
+                                             classpath: [],
+                                             sandbox: false,
+                                             script:
+                                                 "return['telegraf','issuer']"
+                                         ]
+                                     ]
+                                 ],
+                                 [$class: 'CascadeChoiceParameter',
+                                     choiceType: 'PT_SINGLE_SELECT',
+                                     description: 'Select sub environment',
+                                     name: 'sub_env',
+                                     referencedParameters: 'env',
+                                     script:
+                                         [$class: 'GroovyScript',
+                                         fallbackScript: [
+                                                 classpath: [],
+                                                 sandbox: false,
+                                                 script: "return['Could not get Environment from Env Param']"
+                                                 ],
+                                         script: [
+                                                 classpath: [],
+                                                 sandbox: false,
+                                                 script: '''
+                                                 if (env.equals("telegraf")){
+                                                     return['telegraf']
+                                                 }
+                                                 else if(env.equals("issuer")){
+                                                     return['fastag-asset-handler','fastag-issuance', 'fastag-issuer-reporting']
+                                                 }
+                                                 '''
+                                             ]
+                                     ]
+                                 ],
+                              string(defaultValue: '', description: 'Enter date in YYYY-MM-DD Format', name: 'Date')
+                             ])
+                         ])
+                     }
+                 }
+             }
+     stage('Download the s3 logs') {
+             steps {
+                  sh '''
+                  ssh root@10.53.7.22 'aws s3 sync s3://fastag-ocl-log-backup/paytmbank/prod/fastag/'${sub_env}'/application/'${Date}'/archive/ /tmp/'${sub_env}'/'${Date}'/ --profile fastag-ocl-log-backup'
+                 '''
+             }
+         }
+    } 
+         
+ }

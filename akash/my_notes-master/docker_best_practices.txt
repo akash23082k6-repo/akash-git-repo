@@ -1,0 +1,121 @@
+>> Dockerfile Best practices
+
+## Improving dockerfile
+
+# Area of improvements
+1. Incremental ( build time )
+2. Image Size
+3. Maintainability
+4. Security
+5. Consistency/Repeatability
+
+Example of dockerfile
+
+FROM debian
+COPY ./app
+RUN apt-get update
+RUN apt-get -y install openjdk-8-jdk ssh vim
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+****************************************************************************************************************************
+>> Incremental build time ( Make build cache your friend )
+
+Order matters for caching
+
+FROM debian
+COPY ./app   --> not to used here
+RUN apt-get update
+RUN apt-get -y install openjdk-8-jdk ssh vim
+COPY ./app    --> use here .
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+Note : order from least to most frequently changing content .
+
+
+Line buddies : apt get update and install
+
+FROM debian
+COPY ./app
+RUN apt-get update \
+&& apt-get -y install \
+openjdk-8-jdk ssh vim
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+Note : prevents using an outdated package cache
+
+*******************************************************************************************************************************************
+
+>> Reduce image size ( faster deploy and smaller attack surface)
+
+## Remove unnecessary dependencies
+
+FROM debian
+COPY ./app
+RUN apt-get update \
+&& apt-get -y install --no-install-recommends \
+openjdk-8-jdk
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+Note : don't install debugging tools , if needed you can install it later .
+Note : use --no-install-recommends flags to avoid installing dependencies  
+
+## Remove package manager cache
+
+FROM debian
+COPY ./app
+RUN apt-get update \
+&& apt-get -y install --no-install-recommends \
+openjdk-8-jdk \
+&& rm -rf /var/lib/apt/lists/*
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+
+Note : removing unnecessary dependencies and manage cache make our dockerfile more complex, to optimize the docker file we will shift our focus towards it's mainability
+**********************************************************************************************************************************************
+
+>> Maintainability
+
+## use official images where possible
+--> Reduce time spent on maintenance ( Frequently update with fixes)
+--> Reduce size ( Shared layers between images )
+--> Pre-configured for container use
+
+Note : Our above docker file when official image is used
+
+FROM openjdk
+COPY target/app.jar/app
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+
+>> use more specific tags
+
+FROM openjdk:8
+COPY target/app.jar/app
+CMD ["java" , "-jar", "/app/target/app/.jar"]
+
+Note : Avoid using the latest tag , is it rolling tags , be specific to prevent unexpected changes in your base image.
+Note : Look for minimal flavours at docker hub
+
+********************************************************************************************************************************************************
+
+>> Reproducibility
+
+## Build from source in a consistent environment
+
+Make the Dockerfile your blueprint
+
+1. It describes the build environment
+2. correct versions of build tools installed
+3. Prevent inconsistencies between environments.
+4. There may be system dependencies.
+
+
+Note : Multi-stage builds to remove build dependencies.
+
+## Multi-stage use cases
+
+1. Separate build from runtime environment( shrinking image size )
+2. Slight variations on images ( DRY )
+3. Build /dev/test/lint/ ... specific environment.
+4. Delinearizing your dependencies ( Concurrency )
+5. Platform - specific stages

@@ -1,0 +1,56 @@
+Commands to install AWX . 
+
+apt update && apt upgrade -y 
+
+apt install docker.io
+
+systemctl enable docker
+
+apt install curl 
+
+
+curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+chmod +x /usr/local/bin/docker-compose
+
+docker-compose --version
+
+apt update 
+
+apt install ansible 
+
+apt install -y nodejs npm
+
+sudo npm install npm --global
+
+apt install python3-pip git pwgen vim
+
+docker-compose -version 
+
+sudo pip3 install docker-compose==1.23.1
+
+
+wget https://github.com/ansible/awx/archive/refs/tags/17.1.0.zip
+
+apt install unzip
+
+unzip 17.1.0.zip
+
+rm -rf 17.1.0.zip
+
+cd awx-17.1.0/installer/
+vi inventory 
+
+change admin password according to you. 
+
+# pwgen -N 1 -s 30    ---> change awxserets in inventory file. ---not to be used 
+
+ansible-playbook -i inventory install.yml 
+
+*********************************************************************************
+                              AWX configuration 
+******************************************************************************
+
+Follow this link :
+http://vcloud-lab.com/entries/devops/step-by-step-guide-to-configure-first-project-job-template-on-ansible-awx-tower
+

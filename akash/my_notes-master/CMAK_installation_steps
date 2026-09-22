@@ -1,0 +1,20 @@
+CMAK 
+
+Note : Execute below commands as a root. 
+Java version should be 11+
+
+git clone https://github.com/yahoo/CMAK.git
+
+cd CMAK 
+
+./sbt clean dist      ——> it will take some time. 
+
+
+cd taget/universal/       —> untar the cmak file —> get inside the cmak folder —> cd conf/ —> open application.conf —> need to change cmak.zkhosts="enter zookeeper:2181" 
+
+
+After the change in application.conf file will run the below commands . 
+
+Note : Before running below command , make sure your zookeeper and broker are in running state . 
+
+bin/cmak -Dconfig.file=conf/application.conf -Dhttp.port=8080     —— port can be any port of your choice 

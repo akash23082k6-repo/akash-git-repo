@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    
+    stages {stage('Setup parameters') {
+            steps {
+                script {
+                    properties([
+                        parameters([
+                            choice(
+                                choices: ['fastag-asset-handler','fastag-issuance', 'fastag-issuer-reporting','telegraf'],
+                                name: 'service'
+                            ),
+                            string(defaultValue: '', description: 'Enter date in YYYY-MM-DD Format', name: 'Date'),
+                        ])
+                    ])
+                }
+            }
+        }
+        stage('Download the s3 logs') {
+             steps {
+                  sh '''
+                  cd /var/lib/jenkins/fastag-ocl-issuer/
+                  ssh -i fastag-ocl-issuer.pem s3-logs@10.53.7.22 'aws s3 sync s3://fastag-ocl-log-backup/paytmbank/prod/fastag/'${service}'/application/'${Date}'/archive/ /tmp/'${service}'/'${Date}'/ --profile fastag-ocl-log-backup'
+                 '''
+            }
+        }
+    }
+}

@@ -1,0 +1,774 @@
+VPC Endpoint : VPC end point is used in place of NAT gateway. it is cheaper than NAT gateway. 
+--> VPC Endpoint is a virtual device. 
+--> VPC endpoint allow you to access instance in private subnet without having internet access. 
+--> VPC endpoint came in the picture , NAT gateway is very expensive. 
+--> While creating VPC endpoint connect private subnet.
+--> Purpose of VPC endpoint is access private instance without having internet access.
+
+
+---------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+AWS Storage : 
+Type of Storage: 
+1. Simple Storage Service ( S3 ) - object level storage,can save all kind of data.
+2. Elastic file system ( EFS ) -- centraliesd storage system, used only for linux.centraliesd storage system for different instance  in different Availiablity region.
+3. Elastic block storage ( EBS ) -- majorly used with EC2 instance, access only via EC2 instance. server storage block. 
+4. Glacier -- now it's part of S3. now it's called S3 Glacier. used to store data which is not used on daily purpose. for eg . old songs. 
+5. Snowball -- it's a portable storage, by using snowball we can collect large amount of data and later upload to cloud. 
+
+------------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+Difference between block and object storage 
+
+Block                                                                             
+--> suitable for transactional databases, random read/write loads  structured database storage. 
+--> it divides data in evenly sized data chunk for instance.
+--> Data block stored in block storage doesn't contains meta data. block data only have indexing, to recover data. 
+--> For eg : EBS 
+
+object 
+--> it store a file as a whole and doesn't divide them. 
+--> object storage , an object is 
+    -- a file ,itself
+	-- it's metadata
+	-- object global uniqueID. 
+--> Object global uniqueID , it is unique indentifier for the object, it must be unique so that it can be reterive from physical storage location. 
+--> object storage can't be mounted as a drive. 
+--> for eg : facebook, AWS S3 , google drive.
+
+------------------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+
+Simple Storage service ( S3 ) 
+>> It is storage for the internet. means can access file via internet , if you have to access file or data. 
+>> S3 object based storage. 
+>> You can't install operating system on S3. 
+>> S3 has a distributed data store architecture where data are redundantly store in multiple location. means data have copy  at different location. 
+>> Data is store in bucket. kind of folder or drive. 
+>> Bucket is flat container of object. means you can't create bucket inside the bucket ( nested  bucket ) 
+>> Max capacity of a bucket is 5TB. 
+>> Max can have 100 bucket per account , but can be extended via requesting amazon. 
+>> You can create folder in you bucket ( available through console )
+>>  Bucket ownweship is non transferable. 
+>> S3 is region specific. 
+
+** S3 bucket naming rules. 
+>> S3 bucket names are globally unique across all AWS region. 
+>> Bucket name can't be change after they are created. 
+>> If a bucket is deleted , it became available again to you or to other account to use. 
+>> Bucket name must altest 3 and no more than 63 characters long. 
+>> bucket names are part of the url used to access bucket. 
+>> Bucket name must be a series on one or more label. means space among two label is not allowed, need to used dot ( . )
+>> Bucket name can contain lowercase, number and hypen, Uppercase letter are not allowed. 
+>> Bucket name should not be an IP address. 
+>> Each label must start and end with lowercase letter or a number. 
+>> By default , bucket and it's objects are private, by default only owner can access the bucket. 
+
+
+** S3 bucket - subresources
+Sub resoureces for S3 Bucket. 
+>> Lifecycle : to decide on object lifecycle management. means moving less important/not frequently used  data to different location or archiving data. 
+>> Website : To hold configuration related to static website hosted in S3 bucket. 
+>> Versioning : object version as it changes (  Get updated ) means keep all version of file , in case you need older version. versioning can't be disable once enabled.
+>> Access contol list : Bucket policies : to grant access to differnet user. 
+Note : The name is simple two parts bucket region endpoint / bucket name 
+for eg : https:// S3-eu-west.amazon.com/mybucket
+
+
+** S3 object
+>> An object size stored in an S3 bucket can be 0 byte to 5TB. 
+>>Each object is stored and recover by a unique key ( ID or name )
+>> object in AWS S3 is uniquely identified and addressed though 
+  -- service end point
+  -- Bucket name 
+  -- object key 
+  -- optionally object version.
+>> object store in S3 bucket in a region will never leave that region  unless you specifically move to another region or CRR. 
+>> A Bucket owner can grant cross account permission to another AWS account to upload object. 
+>>  You can grant S3 bucket/object permission to 
+  --  Individual users
+  -- AWS account 
+  -- Make the resource public
+  --  all authenticate user.   
+ 
+----------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+* S3 bucket versioning
+>> Provide security against accidental  deletion of object/data  or overwrite. 
+>> Versioning can be also used for data retention and archive. 
+>> once you enable versioning on bucket, it can't be disabled however it can be suspended. 
+>> When enabled , bucket versioning will protect existing and new object and maintain their version as they are updated. 
+>> when you try to delete an object, a delete marker is placed. 
+>> you can still view the object and delete marker. 
+>> You will be charged for all S3 storage cost for all object version stored. 
+>> YOu can used S3 lifecycle policies to delete older vsersion or you can move them to cheaper S3 storage or glacier. 
+>> Bucket version state
+  -- Enabled 
+  -- suspended.
+>> versioning applies to all object in a bucket and not partially applied. 
+>> Object existed before versioning remain version id will be NULL. 
+>> If versioning is suspended , existed object and their version remain as it. New version will not be created. New id will be null. 
+>> If same key is used to store another object , it will override the existing one. 
+>> Object deletion in suspended , then once object with Null ID will be deleted. 
+
+* Multifactor authentication : 
+>> It delete versioning capacity that adds another level of security in case your account is compromised. 
+>> It add another layer of security for the following : 
+  -- changing your bucket versioning
+  -- Permanently deleting  object version. 
+ >> MFA delete require 
+   -- Your security credentials. 
+   -- The code displayed on approved physical of software based authentication device. 
+   
+   
+** S3 multiport upload 
+>> It upload a object in parts.. parts are uploaded independently and in paralleled , in any order. but it is stored at one place. 
+>> recommended for the object sizes of 100 MB or larger. 
+>> It must used for object larger than 5GB
+>> It is done through multiport upload API.
+
+** Copying S3 object. 
+>> It create a copy of an object that is already stored in Amazon S3. 
+>> can create a copy of your object upto 5GB in single atomic operation. if more than 5GB then use multiport upload API. 
+>> Incur ,if copy to another region.
+>> Use the copy operation to 
+   -- Generate additional copies of subject. 
+   -- Renaming object. 
+   -- Move object across AWS location/region. 
+   -- Change object metadata. 
+   
+-----------------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+S3 newly updated types. 
+1. S3 standard -- most expensive and fastest recover time. recommended for daily use. charge are made for storage not for data recovery.
+2. Glacier Deep Archive -- used to store data which is rarely used. cheapest storage. Charges are there for data retireval. recovery time is around 12 hours
+3. Amazon Glacier -- Used to store data which is used for 3 or 4 times in a year. recovery time is upto 12 hours.
+4. S3 standard infrequent access  -- used for storing data which you are not using data on daily basics
+5. S3 one zone IA -- newly launched, only one copy of data is present, all other type have 3 copy. data stored here is recreatable.
+6. S3 Intillegent Tiring - Here amazon decides when to move data from one type to another on basic of lifecycle. 128kb is limit to apply intillegent tiring. uncertain data useage 
+
+Note : In cheaper storage type , charges are made on basic of data recover. 
+   
+------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+Cross Region replication : creating bucket replication in two different location, to reduce latency. for eg : office at two different geography region. 
+Note : after enabling CRR , file upload at source will be reflect at desination bucket not vice versa .
+
+
+--------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+* Elastic block storage : It root volume means os is install on it . 
+There are two block store device available for Ec2
+1. Elastic Block storage 
+  -- Persistent -- data is not delete when EC2 instance is stopped.
+  -- Network attached virtual device.
+2. Instance Storage backed EC2 -- Basically the virtual hard drive on the host allocated to this EC2  instance 
+             -- Limited to 10 GB. 
+			 -- Epheneral storage ( Non persistent storage )
+             -- EC2 instance can't be stopped , can only be rebooted , termination or stop  will delete data. 			 
+
+
+
+EBS : It behave as raw, unformatted external block storage device that you can attach to your EC2 instance.
+>> It is suitable for databases style data that requried frequently read and write. 
+>> EBS volume can attach to single EC2 instance at a time. 
+>> Both EBS volume and EC2 instance must in same availablity zone. 
+>>EBS volume data is replicated by AWS across multiple server in the same AZ to prevent loss resulting form any single AWS component failure.
+
+
+---------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+* EBS Volume type 
+1. Solid state drive ( SSD backed volume ) -- Bootable volume 
+     -- General purpose ( SSD GP2 ) -- Default volume -30 GB  in free account. 
+	 -- Provisoined IOPS SSD (i01) -- maximum IOPS -32000 IOPS. Nitro based IOPS upto 64000  
+2. Hard drive drive ( HDD Backed volume ) -- Non Bootable volume but can you used as storage drive. slow and cheaper as compared to SSD .
+      -- Throughput optimized HDD ( ST 1 ) 
+	  --Cold HDD ( SC1 ) 
+3. Magnetic standard  -- old volume type from amazon. it is cheaper but have low throughput and IOPS , and it bootable volume. 
+Note : Bootable volume means we can install Operating system ( OS )
+IOPS -- Input and output per second. 
+Thoughput -- It means data transfering capacity. 
+SSD volume performance is measured via IOPS where HDD volume  performance is measured via throughput. 
+
+
+>> General purpose
+* SSD GP2 
+>> It is default EBS volume for EC2 instances. 
+>> GP2 volume are backed by SSDs.
+>> General purpose , balances price and performance. 
+>> Ratio of 3IOPS/GB with upto 10,000 IOPS. 
+>> Low latency 
+>> Volume  -- size 1GB -16TB. 
+>> Bootable volume
+
+
+
+* Provisioned IOPS SSD ( io1 )
+>> Used where high IOPS and thoughput are needed , used for mission critical application. for eg rocket/satellite launching. 
+>> maximum IOPS -32000 IOPS. Nitro based IOPS upto 64000 
+>> use If we need more than 10000 IOPS , otherwise used SSD GP2. 
+>> Volume size -- 4GB -16TB
+>> bootable volume 
+
+
+>> HDD 
+* ST1 
+>> Ideal for frequently accessed , throughput intensive workload with large dataset. 
+>> Performace is measured in terms of throughput,measured in MB/sec 
+>> non bootable volume. 
+>> can provisined upto 500 IOPS per volume
+>> volume size -- 500 GB -16 TB. 
+
+* SC1 ( cold HDD ) 
+>>used for lowest cost storage for infrequent access workloads. 
+>> used in file servers. 
+>>non bootable volume. 
+>> can provisioned upto 250 IOPS per volume
+>> volume size -- 500 GB -16 TB. 
+
+* Magnetic standard 
+>> Lowest cost per GB for all EBS volume type which is bootable. 
+>> ideal , where data is infrquently accessed, application required low storage cost. 
+>> volume -- 1GB -1Tb
+>> Max IOPS/volume -- 40 -200
+
+----------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+* EBS snapshot : 
+>> EBS snapshot are point in time images/copies of your EBS volumes. 
+>> At the point of snapshot , only processed data is came in snapshot , running or ongoing processes are not inclueded in snapshot. 
+>> Snapshot data is stored in S3 storage managed by Amazon. We can't access them directly. You can only access them through EC2 API but location of data are not known. 
+>> Per AWS account , upto 5000 EBS volumes can be created. 
+>> Per AWS account upto 10000 snapshot can be created.
+>> While EBS volumes are AZ specific ,snapshot are region specific.
+>> Any AZ in region can use snapshot to create EBS Volume. 
+>> To migrate to EBS from one AZ to another , create a snapshot and create EBS volume from snapshot in intended AZ. 
+>> You can create a snapshot to an EBs volume of the same or large size than orginal volume size from which snapshot was initally created. 
+>> You can take snapshot of non root EBS volume  in running EC2 instance, means EBS volume can access while snapshot process is going on. 
+>> Snapshot created immediately  but it will stay in pending state.First time snapshot take more time as compared to incremental snapshot. 
+>> To take complete snapshot to your non root EBS volume it is recommended stop or unmount the volume.
+Note : to take snapshot of root volume , it should be in stopped/detach can't take snapshot in running state. 
+
+* Incremental snapshot 
+>> EBS snapshot stored incrementallly . 
+>> Incremental snapshot will capture only updated data. 
+>> If previous snapshot is deleted then non updated data will move to next snapshot before deleting snapshot , to secure data. 
+>> First snapshot will be exact copy of EBS volume, later snapshot will be incremental. 
+
+
+--------------------------------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---------------------------------------------------------
+* EBS encryption 
+>> EBS encryption is supported on all EBS volume type and all EC2 instance families 
+>> Snapshot of encrypted volume are also encrypted.
+>> Data encryption at rest means , encryption data while it is stored on the data storage device. 
+>>Different methods to encrypt data on EBS Volums 
+   --use third party EBS volume
+   --Encryption tools 
+   --use encrypted EBS
+   -- Use encryption at the OS level 
+   -- Encrypt data at the application level before storing it at the volume.
+>> Encrypted volume are accessed exactly like unencrypted onces, basically encryption is handled transparently. 
+>> You can attach an encrypted and unencrypted volumes to the EC2 instance.
+Note: encryption is done at EC2 level, then data is stored at EBS volume,
+>> EBS volume are not physically attached to the EC2 instance.It is virtually attached. 
+>> Data in transit between EC2 and encrypted EBS volume is also encrypted.
+>> There is no direct way to change the encryption state of the volume. 
+----> to change the state  of encryption ( indirectly ) of non root volume  you need to follow following ways
+     >> Attach a new encrypted EBS volume to EC2 instance that has the data to be encrypted then, 
+	 >> Mount the new volume to EC2 instance .
+	 >> Copy the data from un-encrypted volume to new volume. 
+	 >> Both volumes must be on the same EC2 instance. 
+	 note: while adding new volume we can enable the encryption options for new volume. 
+----> second method for encrytion 
+      >> Create a snapshot of the unencryted volume. 
+	  >> copy the snapshot and choose  the encrytion for the new copy, this will create encryted copy of snapshot. 
+	  >> use this new copy to create an EBS volume, which will be encryted too. 
+	  >> Attach the new encrypted EBS volume to the EC2 instance. 
+** to change encrytion of EBS Volume for root volume 
+Note : There is no way to encrypt the root volume at the time of it's creation. 
+ >> There is no direct wa to change the encrytion state of a volume. 
+ >> There is indirect workaround
+    -- Lauch the instance with EBS volume requried. 
+	--Create an AMI from EC2 instance 
+	-- copy the AMI and choose encrytion while copying. 
+	-- this result it an encrypted AMI that is private. 
+	-- Use encrypted AMI to launch new EC2 instance which will have their EBS root volulme encypted. 
+ 
+ 
+ ---------------------------XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX--------------------------------------------------------
+ *EBS Enryption key 
+>> To encrytpt a volume  or a snapshot ,you need a encryption key, called customer master key ( CMK )  and are managed by AWS key mangament services ( KMS ) 
+>> when encrypting the first EBS volume , AWS KMS create default CMK . can't shared with anyone . 
+>> This key is used for your first volume encryption, encrytpin of snapshots  created from this volume and sequennt volume created from snapshot. 
+>> After that each newly encrypted volume is encrypted with unique AES-256 encryption key. 
+
+* Changing Encryption key 
+>>  You can't encrytion key to encrypt on existing encryption snapshot or volume. 
+>> if you want to change the key , create a copy of the snapshot and specific during the copy procced that you want to re- encrypt the copy with different key. 
+>> This is came handy when you snapshot is encrypted with default key, default cmk key can't be shared outside your account. 
+>> By default , only account owner can create volume from the account snapshot
+>> You can share your un-encrypted snapshot with AWS community by making them public, but this is not best practice.rather share snapshot with selected account. 
+>> You can't make encrypted snapshot public. 
+>> You can share your encrypted snapshot  with specific AWS account as follows
+  -- make sure that you use non default CMK
+  -- configure cross account permission in order to grant access to account which you wan to share.if Cross account is disable then other can't access snapshot even with key shared. 
+  -- Without this ,other account will not be able to copy the snapshot , nor will able to create volumw of snapshot. 
+>> You can only make copy of the snapshot when it is fully saved at S3 storage. 
+>> Amazon S3 server side encryption ( SSE ) protect the snapshot data during copying.
+>> You can have upto 5 snapshot copy request running in single destination per account. 
+  
+Note : Summary - You can't use default CMK for sharing , need to take snapshot and re encrypt with new key and then share. 
+* For AWS account with whom snapshot is shared. 
+ >> They must first create own copy of snapshot.
+ >> Then create the copy of encrypted snapshot with new key, so that he can access the snapshot even if cross account permissions are taken by the owner of snapshot.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

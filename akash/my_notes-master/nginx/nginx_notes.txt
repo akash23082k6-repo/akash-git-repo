@@ -1,0 +1,199 @@
+
+#############################################################################
+
+Some important commands regarding nginx 
+
+nginx -v 
+nginx -V 
+nginx -t   # Please use this command before restarting nginx if you made changes in  conf files. 
+for eg : 
+[root@ip-172-31-41-143 conf.d]# nginx -t 
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+If we encounter any issue/error in nginx config file then output will be something like this
+
+[root@ip-172-31-41-143 conf.d]# nginx -t 
+nginx: [emerg] unexpected end of file, expecting "}" in /etc/nginx/conf.d/loadbalancer.conf:14
+nginx: configuration file /etc/nginx/nginx.conf test failed
+[root@ip-172-31-41-143 conf.d]# 
+
+## command related to nginx service. 
+
+systemctl status nginx.service   ## check status
+systemctl start nginx.service    ## start nginx service
+systemctl stop nginx.service     ## stop nginx serivice
+systemctl restart nginx.service  ## restart nginx service (mostly after conf changes, use nginx -t before)
+systemctl reload nginx.service   ## reload nginx service  
+
+
+## Important directory for configure and manage nginx. 
+
+/etc/nginx/   ---> default directory ( it may varies according to OS)
+/etc/nginx/nginx.conf   ---> nginx conf file 
+/etc/nginx/conf.d/    ---> where default conf  and other conf are present, all the files present in this directory with .conf extension will be load in nginx configuration. 
+/usr/share/nginx/html/index.html ---> default index.html path. 
+
+
+#############################################################################
+
+#### default.conf 
+
+cd /etc/nginx/conf.d
+vi default.conf
+
+server {
+    listen 80;
+    #listen [::]:80 default_server;
+
+    server_name 13.201.33.140;  #  this is nginx server IP, can use localhost as well. 
+
+    root /usr/share/nginx/html/;
+    index custom.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Additional configurations can be added here
+}
+
+#############################################################################
+
+## nginx as reverse proxy with multiple header
+
+cd /etc/nginx/conf.d
+vi proxy.conf
+server {
+    listen       80;    # port can be modify ... 
+    server_name  localhost;
+ 
+    location / {
+        proxy_pass http://10.139.0.3;    #  replace with server IP ( public or private)
+    }
+ 
+    location /admin {
+        proxy_pass http://139.59.11.125; #  replace with server IP ( public or private)
+      }
+}
+nginx -t
+systemctl restart nginx
+
+#############################################################################
+
+## X-Real-IP Configuration
+
+Reverse Proxy Side (at nginx server)
+
+nano /etc/nginx/conf.d/proxy.conf
+
+proxy_set_header X-Real-IP $remote_addr;
+
+Backend Server Side
+
+nano /etc/nginx/nginx.conf
+
+"$http_x_real_ip"
+
+#############################################################################
+###  Proxy Host Header Commands
+Reverse Proxy Level
+
+proxy_set_header Host $host
+
+Backend Server Level
+
+yum -y install tcpdump
+tcpdump -A -vvvv -s 9999 -i eth1 port 80 > /tmp/headers
+
+#############################################################################
+### Load Balancing Configuration
+upstream backend {
+  server 10.139.0.3;   # replace with server IP . 
+  server 10.139.0.4;
+}
+ 
+server {
+    listen       80;
+    server_name  localhost;
+ 
+    location / {
+        proxy_pass http://backend;
+ }
+}
+
+#############################################################################
+### Load Balancing Configuration 
+    custom health check
+
+### Load Balancing Configuration
+upstream backend {
+  server 10.139.0.3 max_fails=2 fail_timeout=60s;   # after 2 fail request ,server will be available for next 60 secs. 
+  server 10.139.0.4 max_fails=2 fail_timeout=60s;
+}
+ 
+server {
+    listen       80;
+    server_name  localhost;
+ 
+    location / {
+        proxy_pass http://backend;
+ }
+}
+
+Note for demo : 
+
+stop nginx at one server : systemctl stop nginx ... 
+
+use tcpdump to check incoming reqeusts :  for eg: sudo tcpdump -i enX0 port 80
+
+install ab to send mutiple request in short time :  
+
+for eg : sudo yum install httpd-tools
+         ab -n 500 localhost/
+
+#############################################################################
+
+### Load Balancing Configuration 
+    custom weight 
+
+
+upstream backend {
+  server 10.139.0.3 max_fails=2 fail_timeout=60s weight=2;   
+  server 10.139.0.4 max_fails=2 fail_timeout=60s;
+}
+ 
+server {
+    listen       80;
+    server_name  localhost;
+ 
+    location / {
+        proxy_pass http://backend;
+ }
+}
+
+#############################################################################
+
+### Load Balancing Configuration 
+    Least connection ( send incoming request to least connection server)
+
+upstream backend {
+  least_conn;
+  server 10.139.0.3 max_fails=2 fail_timeout=60s weight=2;   
+  server 10.139.0.4 max_fails=2 fail_timeout=60s;
+}
+ 
+server {
+    listen       80;
+    server_name  localhost;
+ 
+    location / {
+        proxy_pass http://backend;
+ }
+}
+
+Note : ab : stands for apache benching 
+
+ab -n 500 -c 100 localhost/
+
+#############################################################################

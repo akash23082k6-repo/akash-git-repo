@@ -1,0 +1,24 @@
+#### BY apt #####
+
+
+  to install :- sudo apt install nginx
+ to check status :- sudo systemctl status nginx
+ to check status :- curl localhost:80
+ to start nginx :- sudo systemctl start nginx
+ to stop nginx :- sudo systemctl stop nginx
+ to restart nginx :- sudo systemctl restart nginx
+ to reload nginx :- sudo systemctl reload nginx 
+to uninstall nginx :- sudo apt remove nginx nginx-common nginx-core -y
+
+########### by yum #############
+
+
+to install:- sudo yum install nginx
+to check status :- sudo systemctl status nginx
+ to check status :- curl localhost:80
+ to start nginx :- sudo systemctl start nginx
+ to stop nginx :- sudo systemctl stop nginx
+ to restart nginx :- sudo systemctl restart nginx
+ to reload nginx :- sudo systemctl reload nginx 
+to uninstall nginx :- sudo yum remove nginx nginx-common nginx-core -y
+

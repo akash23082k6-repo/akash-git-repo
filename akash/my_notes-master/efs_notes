@@ -1,0 +1,51 @@
+# For configuration of EC2 and EFS 
+
+Link : https://digitalcloud.training/mounting-efs-on-ec2-instance/
+
+# Note: Follow  above link for creation of security group and EFS. 
+
+Then follow below notes. 
+
+# For ubuntu  :
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-18-04
+
+sudo apt update
+sudo apt install nfs-kernel-server
+sudo apt-get install nfs-common
+
+# create directory to mount: 
+
+mkdir  /efs
+
+# Using NFS to mount  : 
+
+for eg: 
+
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-00aefc9a8069dbe77.efs.ap-south-1.amazonaws.com:/ efs
+
+# For linux 
+
+sudo yum -y update  
+sudo reboot
+sudo yum -y install nfs-utils 
+
+mkdir  /efs
+
+# Using NFS to mount  : 
+
+for eg: 
+
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-00aefc9a8069dbe77.efs.ap-south-1.amazonaws.com:/ efs
+
+# To make EFS mount presistent :
+
+Link: https://stackoverflow.com/questions/52558062/auto-mounting-efs-on-ec2-instance 
+
+# Make entry in fstab of EFS:
+path : /etc/fstab 
+
+for eg: fs-1234567c.efs.us-west-1.amazonaws.com:/ /mnt/heider nfs4 defaults,_netdev 0 0
+
+# Note: fs-XXXXXXX is EFS DNS . 
+

@@ -1,0 +1,50 @@
+---
+# description: Configure telegraf
+- name: "Copy the template"
+  template:
+    src: telegraf.j2
+    dest: "{{ telegraf_agent_config_path }}/telegraf.conf"
+    owner: telegraf
+    group: telegraf
+    mode: 0640
+  become: yes
+  notify:
+    - Restart Telegraf
+- name: "Copy kafka configurations to telegraf.d directory"
+  template:
+    src: kafka_broker/telegraf.d/inputs.kafka.conf.j2
+    dest: "/etc/telegraf/telegraf.d/inputs.kafka.conf"
+    owner: telegraf
+    group: telegraf
+    mode: 0640
+  become: yes
+  notify:
+    - Restart Telegraf
+- name: "Copy kafka configurations to telegraf.d directory"
+  copy:
+    src: ../templates/kafka_broker/telegraf.d/inputs.ntp.conf
+    dest: "{{ telegraf_agent_config_path }}/inputs.ntp.conf"
+    owner: telegraf
+    group: telegraf
+    mode: 0640
+  become: yes
+  notify:
+    - Restart Telegraf
+- name: creating directory in /opt/kafka
+  file:
+    path: /opt/kafka
+    state: directory 
+- name: "Unarchive kafka exporter binary for exporting kafka metrices"
+  unarchive:
+    src: https://github.com/danielqsj/kafka_exporter/releases/download/v1.4.2/kafka_exporter-1.4.2.linux-amd64.tar.gz
+    dest: /opt/kafka
+    remote_src: yes
+  become: yes
+- name: "Copy kafka-exporter.service file"
+  template:
+    src: kafka-exporter.service.j2
+    dest: /usr/lib/systemd/system/kafka-exporter.service
+    mode: 0640
+  become: yes
+  notify:
+    - Restart Kafka-exporter

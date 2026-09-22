@@ -1,0 +1,140 @@
+Download jdk:
+
+https://jdk.java.net/18/
+https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_linux-x64_bin.tar.gz
+
+https://jdk.java.net/17/
+https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+
+Note: This bone as POC done, please download the specific versions required.
+
+[abhijit.sen@ip-172-23-208-8 downloads]$ hostname -i
+172.23.208.8
+[abhijit.sen@ip-172-23-208-8 downloads]$ pwd
+/opt/utilities/downloads
+[abhijit.sen@ip-172-23-208-8 downloads]$ ls -l
+total 0
+[abhijit.sen@ip-172-23-208-8 downloads]$ sudo wget https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_linux-x64_bin.tar.gz
+--2022-05-12 23:21:03--  https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_linux-x64_bin.tar.gz
+Resolving download.java.net (download.java.net)... 23.50.244.108
+Connecting to download.java.net (download.java.net)|23.50.244.108|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 188244346 (180M) [application/x-gzip]
+Saving to: 'openjdk-18.0.1.1_linux-x64_bin.tar.gz'
+
+100%[==================================================================================================================================================================>] 188,244,346  207MB/s   in 0.9s   
+
+2022-05-12 23:21:04 (207 MB/s) - 'openjdk-18.0.1.1_linux-x64_bin.tar.gz' saved [188244346/188244346]
+
+[abhijit.sen@ip-172-23-208-8 downloads]$ sudo wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+--2022-05-12 23:21:16--  https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+Resolving download.java.net (download.java.net)... 23.50.244.108
+Connecting to download.java.net (download.java.net)|23.50.244.108|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 187033144 (178M) [application/x-gzip]
+Saving to: 'openjdk-17.0.2_linux-x64_bin.tar.gz'
+
+100%[==================================================================================================================================================================>] 187,033,144  193MB/s   in 0.9s   
+
+2022-05-12 23:21:17 (193 MB/s) - 'openjdk-17.0.2_linux-x64_bin.tar.gz' saved [187033144/187033144]
+
+[abhijit.sen@ip-172-23-208-8 downloads]$ ls -ltrh
+total 358M
+-rw-r--r-- 1 root root 179M Dec 27 11:14 openjdk-17.0.2_linux-x64_bin.tar.gz
+-rw-r--r-- 1 root root 180M Apr 27 22:16 openjdk-18.0.1.1_linux-x64_bin.tar.gz
+[abhijit.sen@ip-172-23-208-8 downloads]$ 
+
+
+---------
+Untar:
+[abhijit.sen@ip-172-23-208-8 downloads]$ sudo tar -xvf openjdk-18.0.1.1_linux-x64_bin.tar.gz 
+[abhijit.sen@ip-172-23-208-8 downloads]$ sudo tar -xvf openjdk-18.0.1.1_linux-x64_bin.tar.gz 
+[abhijit.sen@ip-172-23-208-8 downloads]$ ls -ltrh
+total 358M
+-rw-r--r-- 1 root root 179M Dec 27 11:14 openjdk-17.0.2_linux-x64_bin.tar.gz
+-rw-r--r-- 1 root root 180M Apr 27 22:16 openjdk-18.0.1.1_linux-x64_bin.tar.gz
+drwxr-xr-x 8 root root   96 May 12 23:24 jdk-17.0.2
+drwxr-xr-x 8 root root   96 May 12 23:24 jdk-18.0.1.1
+[abhijit.sen@ip-172-23-208-8 downloads]$ 
+
+-----------
+Install:
+Add the lines to /etc/profiles
+
+export JAVA_HOME=/opt/utilities/downloads/jdk-17.0.3
+export PATH=$PATH:$JAVA_HOME/bin
+
+--------------
+Update using alternatives:
+
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$  /opt/utilities/downloads/jdk-17.0.2/bin/java 1
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$ sudo update-alternatives --config java
+
+There is 1 program that provides 'java'.
+
+  Selection    Command
+-----------------------------------------------
+*+ 1           /opt/utilities/downloads/jdk-17.0.2/bin/java
+
+Enter to keep the current selection[+], or type selection number: 1   
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$ java --version
+openjdk 17.0.2 2022-01-18
+OpenJDK Runtime Environment (build 17.0.2+8-86)
+OpenJDK 64-Bit Server VM (build 17.0.2+8-86, mixed mode, sharing)
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$ sudo update-alternatives --install /usr/bin/java java /opt/utilities/downloads/jdk-18.0.1.1/bin/java 2
+
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$ sudo alternatives --config java
+
+There are 2 programs which provide 'java'.
+
+  Selection    Command
+-----------------------------------------------
+ + 1           /opt/utilities/downloads/jdk-17.0.2/bin/java
+*  2           /opt/utilities/downloads/jdk-18.0.1.1/bin/java
+
+Enter to keep the current selection[+], or type selection number: 2
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$ java --version
+openjdk 18.0.1.1 2022-04-22
+OpenJDK Runtime Environment (build 18.0.1.1+2-6)
+OpenJDK 64-Bit Server VM (build 18.0.1.1+2-6, mixed mode, sharing)
+[abhijit.sen@ip-172-23-208-8 jdk-17.0.2]$ 
+
+
+
+*********************************************************************
+                 Commands to alter configuration 
+*********************************************************************
+
+# Follow this link for more details: https://linuxhint.com/update_alternatives_ubuntu/
+
+## Removing Alternative from Alternatives:
+
+sudo update-alternatives --query java 
+
+ubuntu@ip-172-31-7-206:~$ sudo update-alternatives --query java
+Name: java
+Link: /usr/bin/java
+Status: manual
+Best: /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+Value: /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
+Alternative: /opt/utilities/downloads/jdk-17.0.3/bin/java
+Priority: 1
+
+Alternative: /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+Priority: 2
+ubuntu@ip-172-31-7-206:~$ 
+
+## Removing alternatives ... 
+
+# Commands 
+ubuntu@ip-172-31-7-206:~$ sudo update-alternatives --remove java  /opt/utilities/downloads/jdk-17.0.3/bin/java
+ubuntu@ip-172-31-7-206:~$ sudo update-alternatives --remove java  /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+update-alternatives: removing manually selected alternative - switching java to auto mode
+ubuntu@ip-172-31-7-206:~$ sudo update-alternatives --query java
+update-alternatives: error: no alternatives for java
+
+
+## To remove Java 
+
+Follow this link: https://novicestuffs.wordpress.com/2017/04/25/how-to-uninstall-java-from-linux/ 

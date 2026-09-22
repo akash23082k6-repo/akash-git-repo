@@ -1,0 +1,83 @@
+##### Git:- distributed version control system,used to track changes in file or espically source code.
+>>	 we use git for keep track , maintain history of changes, improve collaboration among the teammates working on same projects. 
+
+### stages of git :-
+			1) working directory :- this is where you create or modify files.
+			2) staging area :- you select the changes that you want to commit.
+			3) local repository :- you permanently save the staged changes in Git's local history.
+			4) remote repository :- you send your local commits to a remote repository such as (GitHub,bitbucket,azure repo,gitlab).
+
+>>		 note :- changes moves from working directory-->>staging area-->>local repository-->>remote repository
+
+
+#### basic commands of Git ####
+
+##  Git Configuration ##
+>> check git version :-git --version
+>> set username or email :- for username :-git config --global user.name "Akash"
+			> :- for email :- git config --global user.email "you@example.com"
+ >view git configuration :- git config --list
+
+## Create / Download Repository ##
+ >initialize a new Git repository :- git init
+ >download/clone an existing repository :- git clone <repository-url>
+
+## Check Repository Status ##
+ >check repository :- git status
+
+## add file ##
+ >add one file :- git add filename
+ >add all changed files in staging :- git add .
+
+## Commit ##
+>> Save staged changes into Git history :- git commit -m "Add login feature"
+>> view commit history :- git log
+>> View compact commit history :- git log --oneline
+
+## branch command ##
+ >>list branch :- git branch 
+ >>create a branch :- git branch feature-login
+ >>switch to branch :- git switch feature-login
+ >>switch or create branch :- git switch -c feature-login
+
+## merge ##
+> First switch to the branch you want to merge into:
+      git switch main
+      git merge feature-login
+
+## remote repository ##
+ >Show connected remote repositorie :- git remote -v
+ >Connect local repository to a remote repository :- git remote add origin <repository-url>
+
+## push ##
+ >Push local main branch to remote :- git push origin main
+ >first push :- git push -u origin main
+
+## pull and fetch ##
+ >Downloads changes and merges them into your current branch :- git pull
+ >Downloads remote changes but does not merge them :- git fetch
+
+## view changes ##
+ >see unstaged change :- git diff
+ >see staged change :- git diff --staged
+
+## undo changes ##
+ >discard changes in file :- git restore filename
+ >unstage a file :- git restore --staged filename
+
+## Git reset ##
+ >Undo the latest commit while keeping the changes in your working directory :- git reset HEAD~1
+ >Undo the latest commit and remove its changes :- git reset --hard HEAD~1
+
+## stash ##
+ >Temporarily save unfinished changes :- git stash
+ >See stashed changes :- git stash list
+ >Restore latest stash :- git stash pop
+
+
+
+
+
+
+
+			 

@@ -1,0 +1,91 @@
+Linux commands 
+1. To display calendar --- cal 
+2. To display date -- date 
+3. To display date in custom format --- date '+DATE:%m-%y%nTIME:%H:%M%S'
+4. To display present working directory -- pwd 
+5. To get list of all the file -- ls -ltr or ls 
+6. To create empty text file -- touch filename ... for eg touch test1 
+7. To enter text in a file --- cat > filename .. for eg cat > test1 , cursor will move to next line and you can enter your content there and then ctrl+D to exit.
+8. To read text in a file --- cat < filename or cat filename 
+9. To merge two file -- cat filename1 filename2 > filename3 .. for eg cat test1 test2 > test3 
+     Note : In merge file , content will appear in the order of text file name enter in the merge command. 
+10. To rename a file --- mv test1 newfolder ... here name of test1 is changed to newfolder. 
+11. To remove a file name -- rm filename .. for eg: rm newfolder 
+12. To change directory -- cd directoryname , for eg : cd music, where music is the new directory name. 
+13. To make new directory -- mkdir directoryname ... for eg : mkdir music. 
+14. To remove directory -- rm -r directoryname for eg .. rm -r music 
+    Note : Can't remove directory using command to remove file.
+	mrituyanjay@DESKTOP-AH5ND66:~$ rm new                 ---> command to remove directory, can't remove directory with same command to removing file. 
+    rm: cannot remove 'new': Is a directory
+
+15. To copy a file to another directory : cp filename directoryname/filename1 
+    for eg : cp old Music/old_music   -----> command to copy old file to music directory with file name old_music .
+16. To create hard link -- ln filename1 filename2
+17. To create soft link -- ln -s filename1 filename2
+     Note : Difference between hardlink and softlink is hardlink is exact copy of a file where softlink is just a reference . 
+	 Means in hardlink if source file is deleted , other file remains as it , but it's not the case with softlink. 
+	 
+18.  To change permission of a file --- chmod 777 test -- command to change permission level of a file.
+                                                       Note : Read 4 , write 2 and excuate 1
+													   
+19 . To get detials of your system -- uname -a 
+20 . To get file detials ----  file *
+21 . To get words count ---- wc filename 
+22 . To sort a file  --- sort filename 
+23 . Cut command --- cut -d"-" -f 1,2 players 
+24 . To change conent of file --- dd if=filename of=filename conv=ucase 
+25 . To get manual of any command -- man command name. 
+26 . To compress/zip  a file --- zip -r filename.zip filename 
+27 . To read a compress file -- zcat filename 
+28 . To uncompress a compressed file -- uncompress compress filename 
+    Note : commands from 26 to 28 are not available in ubantu .    
+29 . Command to display text in script file --- echo "enter the content here you want to display"
+30 . Command to excaute  script file -- sh filename 
+     Note : For variable naming : It's can't start with digit,
+                                   Can start with alphabet or underscore
+                                 variable are case sensitive, means name and NAME are two different variable. 
+31. To display all postional parameters at once in a file -- echo $*
+        output : mrituyanjay@DESKTOP-AH5ND66:~$ set toms hanks is fav. actor   --- setting postional parameters
+                 mrituyanjay@DESKTOP-AH5ND66:~$ echo $*             --------- to display all postional parameters at once in a file
+                               toms hanks is fav. actor                           ---------- output 
+								 
+
+32. To display number of postional parmeter in pwd -- echo $#
+   Note : * -- astrick refers to all file in present working directory. 
+   
+33 . To excuate expression before diplaying :  echo `expr $a + $b`  
+          Note : `` is used to tell shell to excaute expression first and then display it. 
+		  Note : expr is capable of handling only whole number , to work with real number of interger need to use bc function . 
+ 
+34 . Operator precendence :  / , * , %    -- have same precendence
+                             +,-          -- have same precendence
+
+
+
+**************************************************************************************************************************************************
+
+df - get a report on the system’s disk space usage in KB's , for space usage in MB's use - df - m . 
+
+
+
+
+
+
+
+ ,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

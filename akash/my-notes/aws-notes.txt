@@ -1,0 +1,507 @@
+ ##### What is AWS ####
+ 
+ AWS (Amazon Web Services) is a cloud platform provided by Amazon that gives you IT resources over the internet.
+ 
+ In simple words:
+
+AWS is like renting computers, storage, databases, networking, and other IT services from Amazon instead of buying and maintaining your own physical servers.
+
+#### Why do we need AWS? ####
+
+AWS helps companies :-1. Reduce infrastructure setup time 
+                      2. Scale application
+                      3. Pay based on usage for many services 
+                      4. Iprove availability
+                      5. Automate infrastructure
+                      6. Deploy applications globally
+                      7. Build disaster-recovery solutions
+
+#### How AWS works ####
+
+AWS hides most of the physical infrastructure from you.
+
+You interact with AWS through:
+
+* AWS Management Console
+* AWS CLI
+* SDKs
+* APIs
+* Infrastructure-as-Code tools such as Terraform
+
+
+#### Important AWS Services ####
+
+
+| Category               | AWS Service    | Purpose                           |
+| ---------------------- | -------------- | --------------------------------- |
+| Compute                | EC2            | Virtual server                    |
+| Storage                | S3             | Object/file storage               |
+| Database               | RDS            | Managed relational database       |
+| Networking             | VPC            | Private network                   |
+| DNS                    | Route 53       | DNS/domain service                |
+| Load Balancing         | ELB            | Distributes traffic               |
+| Security               | IAM            | Users and permissions             |
+| Monitoring             | CloudWatch     | Monitoring/logs                   |
+| Containers             | ECS/EKS        | Container orchestration           |
+| Serverless             | Lambda         | Run code without managing servers |
+| CDN                    | CloudFront     | Fast content delivery             |
+| Infrastructure as Code | CloudFormation | AWS infrastructure automation     |
+
+*********************************************************************************************************************************************************
+
+############ VPC #########
+
+virtual private cloud (VPC) is logically isolated network that we create inside AWS.
+
+**** main components of VPC :-
+
+1. subnet :- it is smaller network in vpc.
+ there are two types of subnets :- 1. public subnet 2. private subnet
+
+ 1. public subnet :-  routed with internet gateway
+ 2. private subnet :- it is not directly routed with internet gateway
+
+2.internet gateway :- connect our vpc to internet
+
+    for directly connnectivity from internet you need
+    1. vpc 
+    2.internet gateway attached to VPC
+    3.public subnet
+    4.route table with attached internet gateway
+    5.EC2 with public IPv4
+    6. security group allowing traffic
+
+3. Route table :- it tells AWS where traffic should go
+
+4. NAT GATEWAY :- used to provide outbound internet access to resources in private network. it is normally placed in public subnet.
+
+5. security group :- it acts like virtual firewall.
+
+####  VPC peering :- allows two vpc to communicate privately using private ip address.
+
+#### Transitive Peering : suppose there are 3 VPC , A, B and C. if A is paired with B and B is paired with C.
+                         it doesn't means A can communicate with C, different peering is required.
+
+
+public ip :- used for internet communcation
+private ip :- used to communicate inside private networks/vpc
+
+
+
+CIDR :- defines ip address range 
+
+formula :- number of subnet :- 2^n 
+           where n=number of borrowed bits 
+
+        ip addresses per subnets = 2^(32 - prefix)
+        for eg:- /26
+                32-26 = 6 
+                2^6 = 64 ip addresses
+
+subnet mask of class A :- 255.0.0.0 (by default)
+
+
+let Suppose you have to connect 60 system to a server/network
+
+ip address :- 12.0.0.0 now we do subnetting
+           
+
+           12. 00000000.00000000.00000000 :- converted into binary
+           2^n - 2  >_60
+           n = 6 means last 6 reserved for host
+          = 12.11111111.11111111. 1 1 0 0 0 0 0 0
+                                  / | \ \ \ \ \ \
+                              128,64,32,16,8,4,2,1            
+                                   |              
+                                we have to add this decimal value for subnet id ( start adding this in 4th octet)
+
+           subnet id = 12.0.0.0/26.   /26 we get from 8 from 1st 8 from 2nd 8 from 3rd and 2 from last octet   
+           subnet mask = 255.0.0.0
+                        255.255.255.128+64 = 12.255.255.192
+
+                2nd subnet id :- 12.0.0.64/26
+                3rd subnet id :- 12.0.0.128/26
+                4th subnet id :- 12.0.0.192/26
+                5th subnet id :- 12.0.0.256/26 :- this is not possible we only use 255 so for this we do
+                5th subnet id :- 12.0.1.0/26 :- this is possible :- logic for eg. clock 4:59 pm after 4:60:-no 5:00 pm
+                6th subnet id :- 12.0.1.64/26
+                    7th subnet id :- 12.0.1.128 
+                                          .
+                                          .
+                                          .
+                                          .
+                                          .
+                2nd last subnet id :- 12.255.255.128/26                          
+                last subnet id :- 12.255.255.192/26              
+
+
+
+
+
+
+
+
+
+| CIDR  | Total IPs | Common use          |
+| ----- | --------: | ------------------- |
+| `/24` |       256 | Large subnet        |
+| `/25` |       128 | 2 subnets from /24  |
+| `/26` |        64 | 4 subnets from /24  |
+| `/27` |        32 | 8 subnets from /24  |
+| `/28` |        16 | 16 subnets from /24 |
+| `/29` |         8 | Small network       |
+
+
+availability zone :- isolated location in AWS where subnets are placed 
+
+
+                                    VPC peering :- 
+
+create two vpc :- vpc-a and vpc-b
+create two subnet :- subnet-a attached to vpc-a
+                     subnet-b attached to vpc-b 
+create two internet gateway :-  IGW-a attached to vpc-a
+                                IGW-b attached to vpc-b
+create two route table :- rt-a attached to IGW-a 
+                          rt-b attached to IGW-b
+launch two EC2 :- EC2-A attached to vpc-a and subnet-a 
+                  EC2-B attached to vpc-b and subnet-B
+create vpc peering connection :- VPC → Peering connections → Create peering connection
+add in route :- in vpc a :- CIDR of VPC-B 
+             in VPC b :- CIDR of VPC-A
+accept peering request :- 
+
+
+
+
+
+
+##############     IPv4 Class A, B, C — Network Ranges
+
+
+IPv4 addresses were traditionally divided into 5 classes: A, B, C, D, E. For basic networking and subnetting, A, B, and C are the important ones.
+
+Class	First Octet Range	Full Network Range	     Default CIDR	  Default Subnet Mask
+A	        1–126	  1.0.0.0 – 126.255.255.255	            /8	         255.0.0.0
+B	       128–191	  128.0.0.0 – 191.255.255.255	        /16     	255.255.0.0
+C	       192–223	  192.0.0.0 – 223.255.255.255	        /24	        255.255.255.0
+
+                                                                      
+
+
+
+
+
+
+
+*************************************************************************************************************************************************
+
+######## EC2 (Elastic compute cloud) ########
+ 
+ it provide virtual server in cloud 
+ if you want to run a website you need a physical computer/server with EC2 AWS provide same concept virtually.
+
+# EC2--instance :- virtual server running inside aws 
+
+
+
+                                                ### EC2--components ###
+
+when you create instance some components work together
+
+1. AMI :- Amazon machine image. it is basically templets/blueprint/image used to create instance
+           it contains such as :-
+            1. operating system
+            2. software configration
+            3. root volume configration
+
+
+there are two types of EC2 :- 1. public ec2 
+                              2. private ec2 
+
+    1. public ec2 :- Usually has a path to/from internet through :
+
+                                       Internet
+                                          │
+                                  Internet Gateway
+                                          │
+                                    Public Subnet
+                                          │
+                                         EC2                                      
+        it can have public IPv4 address
+
+    2. private ec2 :- a private EC2 normally does not have directly reachble public IPv4 address
+
+                                    Private EC2
+                                       │
+                                       ▼
+                                    NAT Gateway
+                                       │
+                                       ▼
+                                Internet Gateway
+                                       │
+                                       ▼
+                                    Internet       
+ ### Elastic ip :- it is a static public IPv4 address that you can associate with EC2 instances or network interface
+
+##### S3 vs EBS #####
+
+| EBS                            | S3                                      |
+| ------------------------------ | --------------------------------------- |
+| Block storage                  | Object storage                          |
+| Usually attached to EC2        | Accessed through APIs/HTTP              |
+| Used like a disk               | Used for files/objects                  |
+| Common for OS/application data | Common for backups, media, static files |
+
+    * EBS = Elastic Block Store
+    * S3 = Simple storage service
+
+
+*********************************************************************************************************************************************************
+
+security group vs  NACL:--
+
+Security group                                                     NACL
+--> Operate at instance level                              --> Operate at subnet level 
+--> Support allow rules only                               --> support both allow as well as denny rules
+--> Stateful , return traffic is automatically allowed    --> Stateless, return traffic must allowed seperately. 
+--> Applies at an instances                                --> Applies to all instance in the subnet. 
+--> room,for example                                        --> Main gate for example 
+
+
+
+
+**************************************************************************************************************************************************
+
+Load balancer :- it Distributes traffic to multiple server/EC2 instance
+                 Instead of users directly accessing one EC2:
+
+                          Users
+                            ↓       
+                           EC2
+
+                we use:
+
+                                 ┌── EC2-1
+                    Users → ALB ─┼── EC2-2
+                                 └── EC2-3
+
+The Load Balancer receives the request and forwards it to an appropriate backend server.
+
+AWS provides this functionality through Elastic Load Balancing (ELB).
+
+
+Why do we need a Load Balancer?
+
+Suppose your application has only one EC2:
+
+1000 Users
+     ↓
+   EC2-1
+
+Problems:
+
+* EC2 can become overloaded
+* If EC2 fails, application may become unavailable
+* Difficult to handle traffic spikes
+* No easy distribution of traffic
+
+With a Load Balancer:
+
+                 ┌── EC2-1
+1000 Users → ALB ├── EC2-2
+                 └── EC2-3
+
+Traffic is distributed among the available servers.
+
+
+
+Main benefits
+1. High Availability
+
+Traffic can be distributed across multiple EC2 instances and Availability Zones.
+
+2. Scalability
+
+Works with Auto Scaling.
+
+When demand increases:
+
+2 EC2 → 4 EC2
+
+The Load Balancer can send traffic to the new instances after they become healthy targets.
+
+3. Fault tolerance
+
+If an instance becomes unhealthy, the Load Balancer can stop sending new traffic to it.
+
+4. SSL/TLS termination
+
+You can configure HTTPS at the Load Balancer.
+
+User
+ ↓ HTTPS
+ALB
+ ↓ HTTP/HTTPS
+EC2
+
+This can reduce the need to handle TLS directly on every backend server.
+
+##### How Load Balancer works
+
+A simplified flow:
+
+              Internet
+                 │
+                 ↓
+          Load Balancer
+                 │
+        ┌────────┼────────┐
+        ↓        ↓        ↓
+      EC2-1    EC2-2    EC2-3
+
+Suppose 3 users send requests:
+
+Request 1 → EC2-1
+Request 2 → EC2-2
+Request 3 → EC2-3
+
+
+
+
+
+
+***************************************************************************************************************************************************
+
+                                            RDS :-(relational database service)
+
+RDS is an AWS services that create,manage,and run relational database without managing the database server yourself.
+
+Common databases supported by RDS :-
+
+    MySQL
+    PostgreSQL
+    MariaDB
+    Oracle
+    Microsoft SQL Server
+    Amazon Aurora
+
+
+why do we use RDS ?
+
+without RDS :- you could install MySQL on an EC2 instance yourself 
+
+    EC2 → Install MySQL → Configure → Patch → Backup → Monitor → Secure
+
+with RDS :- application → RDS Database    
+
+AWS handles many infrastructure tasks such as:-
+
+     Automated backups
+     Software patching
+     Monitoring
+     High availability options
+     Database recovery
+     Storage management
+     Scaling options
+     Security integration with VPC and IAM
+
+
+
+RDS vs EC2 with MySQL
+
+
+| Feature        | RDS                   | MySQL on EC2    |
+| -------------- | --------------------- | --------------- |
+| Database setup | AWS-managed           | You manage      |
+| Backups        | Automated options     | You configure   |
+| Patching       | AWS-managed options   | You manage      |
+| Maintenance    | Less                  | More            |
+| Control        | Less OS-level control | Full OS control |
+| DevOps effort  | Lower                 | Higher          |
+
+
+
+To launch AWS RDS MySQL database
+
+
+
+
+  step 1.  open RDS
+
+            Select your AWS region 
+            create RDS 
+
+  step 2.  choose database creation method 
+
+            standard create 
+
+  step 3.  choose engine
+
+            engine type :- MySQL
+            version :- Select the default/recommended MySQL version available
+      You can also choose Amazon Aurora, PostgreSQL, etc., but for learning, MySQL is straightforward.
+
+
+  step 4. choose templets 
+
+            production
+            dev/test
+            free tier 
+
+             for learning :- Select free tier if it showing the option 
+
+
+   step 5. DB instance setting 
+
+             DB instance identifier :- for eg. - my-rds-DB
+             master Username :- Admin 
+             create a strong password
+
+
+   step 6. instance configration 
+
+             for basic learning database, choose the smallest instance configration offered by the eligible template
+              for eg. :- db.t3.micro
+
+
+   step 7. storage 
+
+             for basic lab :-
+
+                           storage type :- general Purpose ssd 
+                           allocate storage :- eg. 20 GiB 
+
+
+    
+   step 8. connectivity - very important 
+     
+                     
+                       This determines how your EC2/application will connect to RDS.
+
+                        Under Connectivity:
+
+                        VPC
+
+                        Select the VPC where your application/EC2 is located.
+
+                    For example:
+
+                    10.0.0.0/16
+
+                        DB subnet group
+
+                        Choose an existing DB subnet group or create one.
+
+                        For a proper RDS setup, the DB subnet group should contain subnets in at least two Availability Zones.
+
+                    Example:
+
+                    Private subnet 1 → ap-south-1a
+                    Private subnet 2 → ap-south-1b
+        
+                
+                            
+
+
+

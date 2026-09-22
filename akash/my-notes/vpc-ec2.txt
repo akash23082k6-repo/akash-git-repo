@@ -1,0 +1,185 @@
+
+
+****** scp used ssh in background . means if you can connect a server via ssh then we can also to scp . ******
+
+to login to the server: 
+
+ssh -i "my-key.pem" ec2-user@52.66.208.163
+
+run this below command from the local machine , where your file is present . 
+
+scp -i "my-key.pem" <file-name-to-copy> ec2-user@52.66.208.163:/home/ec2-user/
+
+
+
+Task 
+
+
+Command to copy pem key from local to public server 
+
+scp -i "my-key.pem" <file-name-to-copy> ec2-user@52.66.208.163:/home/ec2-user/
+
+command to login to bastion /jump/public server 
+
+ssh -i "my-key.pem" ec2-user@52.66.208.163
+
+
+command to access private server from jump/bastion/public server
+
+ssh -i "my-key.pem" ec2-user@<private-server-ip>
+
+
+command to check internet connectivity from public/private 
+
+ping google.com
+telnet google.com 443 
+
+command to install nginx 
+
+sudo yum install nginx 
+
+command to check status of nginx 
+sudo systemctl status nginx.service
+command to start the nginx
+sudo systemctl start nginx
+
+
+
+*********************************************************************************************************************************************************
+
+ 1 create VPC
+ 2. create subnet -- 1 public and private
+ 3. create internetgate way attached to VPC
+ 4 create routes :- my-test-rt-pub-->> attached to igw  association attached to pub subnet 
+                    my-test-rt-pvt-->>  dont attached to igw association attached to pvt subnet
+5.launch pub instance connect to public
+            after that check ping
+
+6.launch pvt instance
+ then copy pem key 
+
+  7.  nat gateway
+8. always launch in public subnet
+9. make entry of nat gateway in private Route table 
+then test
+
+
+*****************************
+
+AWS CLI
+
+
+aws ec2 run-instances \
+  --image-id ami-01a00762f46d584a1  \
+  --instance-type t3.micro \
+  --key-name my-key \
+  --security-group-ids sg-06164cc2a4fe3fd8b \
+  --subnet-id subnet-0f9d14c035ac17143 \
+  --count 1
+
+to add tag to already existing server: 
+
+aws ec2 create-tags \
+  --resources i-0a4d8d11739add206 \
+  --tags Key=Name,Value=Ubuntu-Server
+
+
+to launch instance with public and name tag:
+  aws ec2 run-instances \
+  --image-id ami-01a00762f46d584a1 \
+  --instance-type t3.micro \
+  --key-name my-key \
+  --security-group-ids sg-06164cc2a4fe3fd8b \
+  --subnet-id subnet-0f9d14c035ac17143 \
+  --associate-public-ip-address \
+  --count 1 \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=my-Public-server}]'
+
+
+
+  To terminate instance : 
+
+
+    aws ec2 terminate-instances --instance-ids <instance-ids> --region ap-south-1
+
+  note : replace instance id 
+
+
+
+  aws ec2 run-instances \
+  --region ap-south-1 \
+  --image-id ami-098f18a6382fb4b2d \
+  --instance-type t3.micro  \
+  --key-name my-key \
+  --security-group-ids sg-09d4e022a01f9eac0 \
+  --subnet-id subnet-0f6c5cf13e8e6260d \
+  --associate-public-ip-address \
+  --count 1 \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=test-public-ec2}]'
+
+
+
+  ami :- ami-0b9cb816e3f45743a
+
+
+
+  ****************************************************************************************************************************************************
+
+                                                       AMI 
+
+create VPC -->> create subnet-->>  create a route table-->> create IGW (public)-->>make entry in routes and associate route-->>make instance
+-->>run -->>make folder--->> tap on instance-->> image and templets-->> create image
+
+snapshots:- backups/copy
+
+EBS encryption key :- 
+
+always use custom key for encrypt EBS volume
+
+to change encryption key :-
+
+AMI → Copy AMI → choose KMS new Key  → use the new AMI.
+
+
+Go to AWS Console → EC2 → AMIs
+Select the AMI you want to change.
+Click Actions → Copy AMI.
+Select the Destination Region.
+Under encryption, enable Encrypt EBS snapshots.
+Select your new KMS key.
+Click Copy AMI.
+Wait until the copied AMI becomes Available.
+
+                                                        AWS IAM (identity access Management)
+                                                      
+
+it is used to control who can access aws resource and what allowed to do 
+
+
+  IAM MAIN COMPONENTS
+
+  user :- represent a person/application needing AWS access
+  group:- collection of user 
+  policy :- rules that allow or deny Actions
+  role :- temprorary permissions to user 
+  permission :- what action is allowed or denied 
+
+
+
+*********************************************************************************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

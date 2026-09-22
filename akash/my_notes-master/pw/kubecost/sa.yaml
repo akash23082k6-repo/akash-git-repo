@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::539436019547:role/prod-kubecost-role # change your role arn
+  name: prod-kubecost-sa
+  namespace: kubecost
+  

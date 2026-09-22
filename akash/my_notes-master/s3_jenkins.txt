@@ -1,0 +1,54 @@
+#!/bin/bash
+opt_log=$1
+aws s3 cp \
+   --recursive \
+   s3://mrituyanjay2104/${opt_log}/ \
+   /home/ubuntu/s3-logs/templog/ \
+   --profile default
+
+
+tmp_file_location=/home/ubuntu/s3-logs/templog/*
+base_location=/home/ubuntu/s3-logs/logs
+
+
+# Create new directory to store today's messages:
+today=$(date +"%m_%d_%Y")
+[[ -d ${base_location}/"$today" ]] || mkdir ${base_location}/"$today"
+
+# Give the message files readable names:
+for FILE in $tmp_file_location
+do
+   mv $FILE ${base_location}/${today}/
+   zip -r ${today}.zip $FILE ${base_location}/${today}/
+done
+
+
+
+******************************************************************
+Jenkins installation on Linux 
+*******************************************************************
+
+Link : https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
+
+sudo yum update –y
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+sudo yum upgrade
+
+For error :  Link : https://exerror.com/error-package-jenkins-2-306-1-1-noarch-jenkins-requires-daemonize/
+
+sudo amazon-linux-extras install epel -y
+
+sudo yum update -y
+
+sudo yum install jenkins java-1.8.0-openjdk-devel -y
+
+sudo systemctl start jenkins
+
+sudo systemctl status jenkins
+
+*************************************************************************

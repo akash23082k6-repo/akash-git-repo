@@ -1,0 +1,70 @@
+Kafka Notes 
+
+
+	
+To increase Topic — jira tickets 
+
+
+bin/kafka-topics --zookeeper [172.23.178.206]:2181 — alter --topic fastag_wallet_transaction  --partitions 72 --replication-factor 3
+
+bin/kafka-topics --zookeeper [172.23.178.206]:2181 —alter --topic fastag_wallet_pending_transaction --partitions 60 --replication-factor 3
+
+bin/kafka-topics --zookeeper [172.23.178.206]:2181 —alter --topic fastag_issuer_netc_delay_minute_10 --partitions 32 --replication-factor 3
+
+bin/kafka-topics --zookeeper [172.23.178.206]:2181 —alter --topic fastag_issuer_netc_delay_minute_60  --partitions 32 --replication-factor 3
+
+
+
+
+
+bin/kafka-topics --zookeeper [172.23.178.206]:2181 — create --topic fastag_issuer_ct_dummy_events --partitions 4 --replication-factor 3
+
+
+To list already present topic : 
+
+kafka-topics --list --zookeeper 172.23.178.206:2181 |grep fastag_issuer_ct_dummy_events
+
+
+>> Kafka : It is distrubuted messaging streaming platform uses publish and subscribe mechaism to stream records.
+
+ It is originally developed by Linkedin , later pass on to Apache foundation . 
+
+## Messaging streaming 
+        1. Point to Point ( messages are deleted once received by receiver , no time limit for receiver to consume the message, receiver send acknowledgment after receiving the message. 
+        2. Publish and subscribe ( message are stored in topic, time limit for receiver to consume the message, receiver don’t send acknowledgement after receiving the message.)
+
+
+
+
+## Installation of zookeeper and Kafka 
+
+To start zookeeper : need to run  zkServer.sh , location /bin   —> it will look for config file in conf/ —> zoo.cfg 
+
+Zoo.cfg 
+tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/tmp/zookeeper
+clientPort=2181
+maxClientCnxns=60
+4lw.commands.whitelist=*
+
+## echo stat | nc localhost 2181   — to check zookeeper status 
+
+## To start/stop  Kafka : need to run below script at bin/
+kafka-server-stop.sh
+kafka-server-start.sh
+
+bin/kafka-server-start.sh -daemon config/server.properties —> to start Kafka in background . 
+
+For Kakfa to run it will look for server.properties in conf/
+
+broker.id=1
+listeners=PLAINTEXT://localhost:9092
+
+ ## echo dump | nc localhost 2181 | grep brokers — to check brokers 
+
+## To check Kafka logs : /logs/server.log
+
+tail -100f server.log —> to check logs 
+

@@ -1,0 +1,36 @@
+[Unit]
+Description=Kafka Manager
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+[Service]
+Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.13.0.8-1.amzn2.0.3.x86_64
+ExecStart=/opt/CMAK/target/universal/cmak-3.0.0.6/bin/cmak -Dconfig.file=conf/application.conf -Dhttp.port=8080 
+Type=simple
+StartLimitInterval=0
+Restart=always
+
+
+
+
+*********************************************************
+Working service file 
+*********************************************************
+[Unit]
+Description=Kafka Manager
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+[Service]
+ExecStart=/opt/CMAK/target/universal/cmak-3.0.0.6/bin/cmak -Dconfig.file=/opt/CMAK/target/universal/cmak-3.0.0.6/conf/application.conf -Dhttp.port=8080
+Type=simple
+StartLimitInterval=0
+Restart=always

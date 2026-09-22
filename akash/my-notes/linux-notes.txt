@@ -1,0 +1,435 @@
+ #### What is linux? ####
+
+ -->> linux is an operating system kernel that manages the hardware and software resource of a computer.
+ ==>> in other words linux acts like a bridge between application and computer hardware.
+
+
+
+ ##### Why linux is important? #####
+
+ -->> it is widely used in:- 1. web servers 2. devops 3. database 4. cloud infrastructure 5. networking 6. containers 7. kubernities 8. cyber security
+
+  ******************************************************************************************************************************************
+
+##### linux distribution #####
+
+-->> ubuntu,red hat enterprise linux {RHEL}, centos stream, fedora, debian, rocky linux, almalLinux 
+
+
+
+#### linux vs windows ####
+
+-->> LINUX :- mostly open-source, highly customizable, widely used on services, powerful command line, generally lightweight 
+-->> WINDOWS :- mostly proprietary, more controlled, widely used on desktops, GUI-focused, generally more resource-heavy
+
+
+
+###############  kernel  ###########
+
+-->> the kernelis the core of linux 
+        1. CPU 
+        2. memory
+        3. processes
+        4. device 
+        5. files
+        6. networking
+
+###### Linux shell #######
+
+ -->>> it is a powerful program that acts as interface accepting your typed command and passes them to operating system to execute . 
+       most common default on linux shell is bash.
+
+
+
+  *******************************************************************************************************************************************
+
+ 6 important Linux directories for Linux administration/DevOps, remember these:
+
+Directory	                     Purpose	                                     Example
+
+/	              Root — starting point of entire filesystem	                   /
+/home	               Users' personal files	                               /home/akash
+/etc	               Configuration files                               	/etc/ssh/sshd_config
+/var	            Frequently changing data, especially logs	                /var/log/
+/tmp	                   Temporary files	                                  /tmp/test.txt
+/usr	              User programs, commands, libraries                 	/usr/bin/     
+
+
+**************************************************************************************************************************************************
+
+
+########## Basic commands of linux ##########
+
+
+
+
+To check which user logged in --> whoami
+
+To check present working directory --> pwd
+
+To create new directory -->> mkdir <file name>
+
+To enter into directory -->> cd <directory name>
+
+To got out of directory -->> cd ../../../
+
+To move to previous directory -->> cd -
+
+To display file content and combine multiple files -->> cat <filename>
+
+To delete file permanently -->> rm -rf <filename/directory>
+
+To create empty file or update timestamp of file -->> touch <file>
+
+To edit file or create new file -->> vi <filename>
+
+To read or show file -->> cat <filename>
+
+The command is used to print text or the value of a variable in the terminal :- echo
+
+The command is used to print text or the value of a variable in the terminal :- echo $path
+
+To view hidden file -->> ls -a
+
+To show files in long format -->> ls -l
+
+To show file in reverse order -->> ls -r
+
+To change file timestamps -->> touch
+
+To create new file -->> touch
+
+To match timestamp of diff. file -->> touch -r
+
+To set file timestamp with specific time and date -->> touch -d
+
+To see history of commands -->> history
+ to clear history -->> history -c 
+  to delete history -->> history -d 
+>>>> One of the most powerful history shortcuts is [Ctrl-R] <<<<
+
+***********************************************************************************************************************************************
+
+To save in vi editor -->> esc + shift + : +wq
+
+To delete files -->> re file.txt
+rm -i file -->> confirmation before deleting each file
+rm -r directory -->> to delete a directory and all of its contents, including any subdirectories and files
+
+To search for a file -->>find /home -name <filename>
+To search case-insensitively -->> find /iname <filename>
+
+
+To remove an empty file/directory -->> rmdir test 
+
+To delete entire directory -->> rm -rf  <directory/path to directory>
+
+To show files and directory -->> ls
+
+To change directory -->> cd /home 
+
+To copy file/directory -->> cp file.txt backup.txt
+Copying Directories Recursively -->> cp -r 
+Handling File Overwrites -->> cp -i 
+
+
+To move file/directory -->> mv file.txt /home/user/
+to prevent file to Overwrites -->> mv -i 
+-->>> mv -b ->>>> If you intend to overwrite a file but want to keep the old version
+-->> mv -v -->> to showing each file being moved or renamed 
+
+To rename file/directory -->> mv old.txt new.txt
+
+to check package manager -->> cat /etc/os-release
+
+To use the Linux help command, simply type help followed by the name of the built-in command -->> help[name of the build in command]
+ the best first step to find help for an unfamiliar program -->> ls --help
+
+
+To find one line discription about command -->> whatis
+
+
+##  ALAIS -->>>  a custom nickname or shorthand shortcut for a long or complex command 
+ 
+ *************************************************************************************************************************************************
+
+###### pipe command ->> connects the output of one command directly to the input of another command
+
+    ls -la /etc -->> this show to long , difficult to read
+    ls -la /etc | less -->> this show low at a time easy to read
+
+
+##### TEE command -->> reads standard input and writes it to both standard output (your terminal screen) and one or more files at the same time.
+
+    ls | tee <filename>
+    ls -la /etc | tee etc_listing.txt | grep "conf" -->>this command does three things:
+
+1. It lists the contents of the /etc directory.
+2. It pipes that output to tee, which saves a copy to etc_listing.txt and also passes it along.
+3. The output from tee is then piped to grep, which filters for lines containing "conf".
+
+
+##### linux cut commands
+
+
+To cut by characters -->> cut -c 1 {filename}==>> cut 1st charcter from each line
+eg. -> 1. cut -c 1-4 [filename] = Specifies a range of characters. It grabs position 1, 2, 3, and 4 from each line.
+
+       2. cut -c 1,3,5 [filename] = This extracts characters 1, 3 and 5 from everylines
+
+To Cut by fields -->> 
+                     our file
+                           
+                     Akash:Linux:Admin
+                     Rahul:DevOps:Cloud
+                     Aman:Network:Security     
+
+                 cut -d ':' -f 1 (filename)
+               
+               output:- Akash
+                        Rahul
+                        Aman
+          if we do cut -d ':' -f 2 (filename)
+
+          output :- linux
+                    devops
+                    Network
+
+
+To cut with command output -->> echo "Akash:Linux:Admin" | cut -d ':' -f 1
+                             
+                             output :- Akash
+
+ ###### Linux paste Command —   Suppose you have two files.
+
+1. file :- names.txt
+Akash
+Rahul
+Aman
+Priya
+2. file :- cities.txt
+Punjab
+Delhi
+Mumbai
+Pune
+
+ RUN :- paste names.txt cities.txt
+
+Output::- Akash   Punjab
+          Rahul   Delhi
+          Aman    Mumbai
+          Priya   Pune           
+
+        SIMILARLY:- you can paste multiple files
+
+ Paste with a delimiter :- paste -d ':' names.txt cities.txt                      
+
+                         output:- Akash:Punjab   
+                                  Rahul:Delhi
+                                  Aman:Mumbai
+                                  Priya:Pune
+
+  Paste/Combine lines vertically:- paste -s names.txt
+
+                                   output :- Akash    Rahul    Aman    Priya
+
+
+###### WC AND NL COMMANDS :- wc stands for Word Count.
+         
+         It can count:
+
+            Lines
+            Words
+            Characters
+            Bytes
+
+    Suppose linux.txt contains:
+
+        Linux
+        DevOps
+        Cloud    
+        Ansible
+
+ RUN :- wc linux.txt
+  
+  output:- 4 4 25 linux.txt
+         4 lines
+         4 words
+         25 bytes
+  RUN :- wc -l linux.txt (count lines)
+  Run :- wc -c linux.txt (count bytes)
+  Run :- wc -m linux.txt (count characters)
+
+NL COMMAND :- nl linux.txt
+
+            => show the file and add line number
+
+
+ #### /etc/passwd :-it contains information about user account
+   
+   Run:- cat /etc/passwd
+   output:-akash:x:1000:1000:Akash:/home/akash:/bin/bash
+             Username	akash
+            Password placeholder	x
+        	UID	1000
+            GID	1000
+            User information/comment	Akash
+            Home directory	/home/akash
+            Login shell	/bin/bash
+
+
+
+   #### /etc/shadow :- it stores password related information for user account
+            RUN :- sudo cat /etc/shadow
+            output:- akash:$6$abc...xyz:20340:0:99999:7:::
+            each line represent one user 
+
+
+            ##### importantconcept ####
+
+            /etc/passwd
+                ↓
+        Who is the user?
+                ↓
+        Username + UID + GID + Home + Shell
+
+            /etc/shadow
+                ↓
+        What are the password/security details?
+                ↓
+        Password hash + password aging         
+
+
+   #### /etc/group :- it contains information about group and group members
+        for eg. - devops:x:1002:akash,rahul 
+             this means devops group contains akash and rahul members
+
+             Run:- cat /etc/group (to view group)
+             Run:- grep devops /etc/group (to find particular group)
+              
+              output:- devops:x:1002:akash,rahul
+                      (groupname : password : GID : members)
+
+               groupadd:-
+                            Run:-sudo groupadd devops { to check :-( grep devops /etc/group ) }
+               to add members :-
+                            Run :- sudo usermod -aG devops akash { to check:- groups akash}
+
+
+            
+
+
+
+
+
+
+
+########## User mode *********
+
+read     r   4
+write    w   2
+execute  x   1
+
+to change permissions -->>> chmod [give info]
+
+to change ownership of file/directory : chown
+
+to change the file's group ownership :- chgrp
+
+to change both the owner and group of a file :- chown
+
+to change a user's password :- passwd
+
+to add an existing user to a supplementary group :- usermod
+
+to find the process ID (PID) of a running process by its name:- pidof
+
+to continuously monitor changes in a log file :- tail -f 
+
+to remove duplicate adjacent lines from a file :- uniq
+
+
+###### umask ######
+
+it controls the the default permissions given to the new file/directory
+
+it is use to remove or modify default permissions of a file/directories
+
+file:-->> 666
+directories-->> 777
+
+for example:-- umask 22
+
+new file :- 666-022 = 644 result-->> -rw-r--r--
+
+new directory :- 777-022 = 755 result -->> drwxr-xr-x
+
+
+#### TAR AND GZIP ####
+
+TAR:- combines multiple files and directories into a single archive
+
+tar cvf myarchive.tar file1 file2 directory1
+
+c: create a new archive.
+v: verbose mode, which lists the files as they are processed.
+f: file, which specifies that the next argument is the name of the archive file.
+
+tar xzvf myarchive.tar.gz
+
+x: extract files from an archive.
+z: Decompress the archive using g**z**ip.
+v: verbose mode, listing files as they are extracted.
+f: file, specifying the archive file to extract.
+x: extract files from an archive.
+z: Decompress the archive using g**z**ip.
+v: verbose mode, listing files as they are extracted.
+f: file, specifying the archive file to extract.
+
+
+GZIP :- compresses an individual file to reduce its size 
+To decompress the file, you can use gunzip:- gunzip <filename>
+
+rpm and dpkg :- these commands used to install package file 
+to install package :- Debian: $ dpkg -i some_deb_package.deb
+                      RPM: $ rpm -i some_rpm_package.rpm
+to remove package :- Debian: $ dpkg -r some_deb_package.deb
+                     RPM: $ rpm -e some_rpm_package.rpm
+
+
+#### Vim Navigation ####
+
+h or the left arrow - will move you left one character
+j or the down arrow - will move you down one line
+k or the up arrow - will move you up one line
+l or the right arrow - will move you right one character
+
+x – Deletes the character directly under the cursor.
+dw – Deletes from the cursor to the beginning of the next word.
+d$ – Deletes from the cursor to the end of the current line.
+dd – The dd command deletes the entire current line.
+3dd – Deletes three lines, starting from the current line.
+
+cw – Changes the text from the cursor to the end of the word.
+c$ – Changes text from the cursor to the end of the line.
+cc – Changes the entire current line.
+
+yw – Yanks (copies) a word.
+yy – Yanks the entire current line.
+p – Puts (pastes) the yanked text after the cursor or on the line below.
+P – Puts the text before the cursor or on the line above.
+
+##### Emacs Manipulate Files #####
+
+C-x C-s - Save a file
+C-x C-w - Save file as
+C-x s - Save all
+C-x C-f - open file 
+
+            Emacs Buffer Navigation
+
+        C-x b - Switch to another buffer by name
+        C-x right arrow - Cycle to the next buffer
+        C-x left arrow - Cycle to the previous buffer     
+
+        

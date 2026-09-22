@@ -1,0 +1,108 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: common.rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: common.rules
+      rules:
+        # - alert: Pod in a pending state for 10 min
+        #   expr: kube_pod_labels * on (pod, namespace) group_left() ( min_over_time(sum by (pod, namespace) (kube_pod_status_phase{phase=~"Pending",namespace!= "pre-prod"})[10m:1m]) > 0 )
+        #   for: 10m
+        #   labels:
+        #     severity: critical
+        #     namespace: "{{ $labels.namespace }}"
+        #     team: "{{ $labels.label_team }}"
+        #   annotations:
+        #     message: "{{ $labels.pod }} are in pending state in {{ $labels.namespace }} for 10m"
+        #     description: "Pod in pending state for 10 min"
+
+        - alert: Blackbox Endpoint Availablity
+          expr: count_over_time((probe_success{} == 0 )[75s:15s]) > 5
+          for: 2m
+          labels:
+            severity: critical
+            namespace: "{{ $labels.namespace }}"
+            team: "{{ $labels.label_team }}"
+          annotations:
+            message: "{{ $labels.instance }} is not available for 5 data points"
+            description: "Serivce not providing 200 code for last 5 datapoints"
+
+        # - alert: Memory usage over 70% of a service
+        #   expr: 100 *sum(container_memory_usage_bytes{container !=""}) by (namespace,pod)/sum(kube_pod_container_resource_requests{resource="memory"}) by (namespace,pod) > 70
+        #   for: 2m
+        #   labels:
+        #     severity: Warning
+        #     team: {{ $labels.lable_team }}
+        #   annotations:
+        #     message: "{{ $labels.pod }} in namespace {{ $labels.namespace }} having memory  usage over 70% for last 5m,if values is above 100% because we have put an alert on requests metrics, it is due to the difference between request and limit resource value (it should be ideal equal or should have difference of 5%)"
+        #     description: "Memory usage over 70% for pod {{ $labels.pod }}"
+
+        # - alert: Pod capacity for any deployment less than 70% for 5 min
+        #   expr: kube_deployment_labels * on (deployment, namespace) group_right(label_team) ( sum (kube_deployment_status_replicas_available{deployment!="robusta-runner",deployment!="robusta-forwarder",namespace!="pre-prod"}) by (deployment,namespace)/ sum (kube_deployment_spec_replicas{}) by (deployment,namespace) *100 < 70 )
+        #   for: 5m
+        #   labels:
+        #     severity: warning
+        #     namespace: "{{ $labels.namespace }}"
+        #     team: "{{ $labels.label_team }}"
+        #   annotations:
+        #     message: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} have pod Availability less than 70% for the last 5m "
+        #     description: "Pod Availability less 70% for deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }}"
+
+        # - alert: CPU usage over 80% of a service
+        #   expr: 100 * sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod,namespace) / sum(kube_pod_container_resource_requests{resource="cpu"}) by (pod,namespace) > 80
+        #   for: 5m
+        #   labels:
+        #     severity: Warning
+        #   annotations:
+        #     message: "{{ $labels.pod }} in namespace {{ $labels.namespace }} having CPU  usage over 80% for last 5m,if values is above 100% because we have put an alert on requests metrics, it is due to the difference between request and limit resource value (it should be ideal equal or should have difference of 5%)"
+        #     description: "CPU usage over 80% for pod {{ $labels.pod }}"
+
+
+        - alert: Service_4xx_ErrorThresholdExceeded
+          expr: kube_deployment_labels * on (deployment, namespace) group_right(label_team)((sum(irate(response_total{namespace="microservices", deployment !="saarthi-teacher-v2-service",deployment != "pw-webinar-service",deployment !="center-page-service",deployment != "pw-widgets-service", direction="inbound", status_code=~"4.*"}[1m])) by (deployment, namespace) / sum(irate(response_total{namespace="microservices",direction="inbound"}[1m])) by (deployment, namespace) * 100) > 10)
+          for: 1m
+          labels:
+            severity: critical
+            namespace: "{{ $labels.namespace }}"
+            team: "{{ $labels.label_team }}"
+
+          annotations:
+            message: "{{ $labels.deployment }} service 4xx error thresholdexceeded"
+            description: "High 4xx error for {{ $labels.deployment }}  in last 1 minutes. Current Value is {{ $value }}"
+
+        # - alert: Service_5xx_ErrorThresholdExceeded
+        #   expr: kube_deployment_labels * on (deployment,namespace) group_right(label_team)((sum(irate(response_total{namespace="microservices", direction="inbound", status_code=~"5.*"}[1m])) by (deployment,namespace) / sum(irate(response_total{namespace="microservices",direction="inbound"}[1m])) by (deployment,namespace) * 100) > 10 )
+        #   for: 1m
+        #   labels:
+        #     severity: critical
+        #     namespace: "{{ $labels.namespace }}"
+        #     team: "{{ $labels.label_team }}"
+
+        #   annotations:
+        #     message: "{{ $labels.deployment }}  5xx error thresholdexceeded"
+        #     description: "High 5xx error for {{ $labels.deployment }}  in last 1 minutes. Current Value is {{ $value }}"
+
+        # - alert: Service_429_ErrorThresholdExceeded
+        #   expr: kube_deployment_labels * on (deployment,namespace) group_right(label_team)((sum(irate(response_total{namespace="microservices", direction="inbound", status_code="429"}[1m])) by (deployment,namespace)/sum(irate(response_total{namespace="microservices",direction="inbound"}[1m])) by (deployment,namespace) *100) > 10 )
+        #   for: 1m
+        #   labels:
+        #     severity: critical
+        #     namespace: "{{ $labels.namespace }}"
+        #     team: "{{ $labels.label_team }}"
+
+        #   annotations:
+        #     message: "{{ $labels.deployment }}  429 error thresholdexceeded"
+        #     description: "High 429 error for {{ $labels.deployment }}  in last 1 minutes. Current Value is {{ $value }}"
+
+        - alert: URGENT PW Skills NGINX DOWN.
+          expr: nginx_up == 1
+          for: 1m
+          labels:
+            severity: critical
+            team: "pw-skills"
+
+          annotations:
+            message: "[URGENT]PW Skills Service Down."
+            description: "PW Skills Service Nginx Server Down."

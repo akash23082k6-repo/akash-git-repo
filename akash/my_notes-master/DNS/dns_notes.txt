@@ -1,0 +1,25 @@
+## Notes 
+
+Make entry in cat >> /etc/hosts  at linux server 
+
+193.34.24.111  db 
+
+
+server will check entry  first in host  file then move to DNS  server. 
+
+all the utilities for eg: curl, ping , telnet check file entry to resolve hostname
+
+## To make server point to DNS  server 
+
+cat /etc/resolv.conf 
+nameserver   <IP-address>
+
+##  To change order of preference of host , make changes in below file : 
+
+cat >> /etc/nsswitch.conf 
+
+...
+hosts  files dns 
+...
+
+note : commands like , nslookup  or dig query the  dns server  directly not the local hostfile . 
