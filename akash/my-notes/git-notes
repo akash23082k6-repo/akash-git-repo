@@ -75,9 +75,33 @@
  >Restore latest stash :- git stash pop
 
 ## GitHub ##
+> GitHub is a cloud-based platform where we can store and manage Git repositories.
+> Git = Tool for version control
+> GitHub = Online platform for hosting Git repositories
 
+## use of GitHub ##
+> GitHub is used to store, manage, and share code online using Git repositories.
+> It helps developers collaborate, track changes, review code, and automate deployments.
 
+## workflow of GitHub ##
 
+> To edit exesting file 
+
+create a branch (git checkout -b branch name)
+		|
+git pull (latest pull)
+		|		
+edit changes (code .)
+		|
+git status(check what changes)
+		|
+git add (add the change file)
+		|
+git commit -m "list what you changed" (commit)
+		|
+git push origin (push your branch)
+		|
+merge into main ( feature branch -->> push-->> create pull req.-->> merge pull request)
 
 
 
