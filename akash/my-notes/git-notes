@@ -79,6 +79,26 @@
 > Git = Tool for version control
 > GitHub = Online platform for hosting Git repositories
 
+## Git rebase ##
+
+>> Rebase current branch onto main :- git rebase main
+
+>> Get latest main first :- git fetch origin
+>							git rebase origin/main
+
+
+>> Interactive rebase last 5 commits :- git rebase -i HEAD~5
+
+>> Continue after resolving conflicts :-git add <resolved-files>
+>										git rebase --continue
+
+>> Skip the problematic commit:- git rebase --skip
+
+>> Cancel rebase and return to original state :- git rebase --abort
+
+>> Edit/reword/squash recent commits :- git rebase -i HEAD~5
+
+
 ## use of GitHub ##
 > GitHub is used to store, manage, and share code online using Git repositories.
 > It helps developers collaborate, track changes, review code, and automate deployments.
@@ -102,6 +122,7 @@ git commit -m "list what you changed" (commit)
 git push origin (push your branch)
 		|
 merge into main ( feature branch -->> push-->> create pull req.-->> merge pull request)
+
 
 
 
