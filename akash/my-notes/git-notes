@@ -39,7 +39,8 @@
  >>create a branch :- git branch feature-login
  >>switch to branch :- git switch feature-login
  >>switch or create branch :- git switch -c feature-login
-
+ >>delete a local git branch :- git branch -d branch-name
+ >>forcefully delete local git branch :- git branch -D branch-name
 ## merge ##
 > First switch to the branch you want to merge into:
       git switch main
@@ -119,7 +120,7 @@ git add (add the change file)
 		|
 git commit -m "list what you changed" (commit)
 		|
-git push origin (push your branch)
+git push origin branch-name
 		|
 merge into main ( feature branch -->> push-->> create pull req.-->> merge pull request)
 
