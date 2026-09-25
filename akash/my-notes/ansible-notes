@@ -30,7 +30,7 @@
 
 ## important commands ansible ##
 
-create a directory :-ansible all -i hosts -m file -a "path=/tmp/testdir state=directory"
+create a directory :- ansible all -i hosts -m file -a "path=/tmp/testdir state=directory"
 copy a file :- ansible all -i hosts -m copy -a "src=file.txt dest=/tmp/file.txt"
 specify PEM key directly :- ansible all -i hosts -m ping --private-key /path/to/my-key.pem
 list hosts in group :- ansible webservers -i hosts --list-hosts
