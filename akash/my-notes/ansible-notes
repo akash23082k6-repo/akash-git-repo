@@ -1,0 +1,36 @@
+## ansible setup ##
+        1. install ansible 
+        2. create ansible directory 
+        3. keep your pem key ready
+        4. create hosts file
+        5. create ansible cfg. file
+        6. test ssh first
+        7. check inventory 
+        8. test ansible connection
+
+## basic commands of ansible ##
+
+       check uptime :- ansible all -m command -a "uptime"
+       check hostname :- ansible all -m command -a "hostname"
+       check OS :- ansible all -m command -a "cat /etc/os-release"
+       check memory :- ansible all -m command -a "free -h"
+       check disk :- ansible all -m command -a "df -h"
+
+## nginx commands ##
+
+      install nginx :- ansible all -i hosts -b -m apt -a "name=nginx state=present update_cache=yes"
+
+      start nginx :- ansible all -i hosts -b -m service -a "name=nginx state=started"
+
+      stop nginx :- ansible all -i hosts -b -m service -a "name=nginx state=stopped"
+
+      check nginx status :- ansible all -i hosts -b -m shell -a "systemctl status nginx"
+
+      enable nginx at boot :- ansible all -i hosts -b -m service -a "name=nginx enabled=yes"
+
+## important commands ansible ##
+
+create a directory :-ansible all -i hosts -m file -a "path=/tmp/testdir state=directory"
+copy a file :- ansible all -i hosts -m copy -a "src=file.txt dest=/tmp/file.txt"
+specify PEM key directly :- ansible all -i hosts -m ping --private-key /path/to/my-key.pem
+list hosts in group :- ansible webservers -i hosts --list-hosts
