@@ -1,3 +1,18 @@
+## ansible:- it is an open source automation tool used to automate configuration management,application deployment,and infrastructure management without agents.
+ > ansible= agentless
+
+ ## YAML :- YAML is a human readable configuration format that uses identication to represent structured data and is widely used for writing ansible playbook.  
+ 
+name: Install Nginx
+hosts: webservers
+become: yes
+
+tasks:
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: present
+
 ## ansible setup ##
         1. install ansible 
         2. create ansible directory 
@@ -11,9 +26,13 @@
 ## basic commands of ansible ##
 
        check uptime :- ansible all -m command -a "uptime"
+
        check hostname :- ansible all -m command -a "hostname"
+
        check OS :- ansible all -m command -a "cat /etc/os-release"
+
        check memory :- ansible all -m command -a "free -h"
+
        check disk :- ansible all -m command -a "df -h"
 
 ## nginx commands ##
@@ -31,6 +50,21 @@
 ## important commands ansible ##
 
 create a directory :- ansible all -i hosts -m file -a "path=/tmp/testdir state=directory"
+
 copy a file :- ansible all -i hosts -m copy -a "src=file.txt dest=/tmp/file.txt"
+
 specify PEM key directly :- ansible all -i hosts -m ping --private-key /path/to/my-key.pem
+
 list hosts in group :- ansible webservers -i hosts --list-hosts
+
+## list file using ansible commands ##
+
+list files :- ansible all -i hosts -m shell -a "ls"
+
+detailed files list :- ansible all -i hosts -m shell -a "ls -l"
+
+list specific directory :- ansible all -i hosts -m shell -a "ls -l /tmp" 
+
+show hidden files :- ansible all -i hosts -m shell -a "ls -la"
+
+check current directory :- ansible all -i hosts -m shell -a "pwd"
