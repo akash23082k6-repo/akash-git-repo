@@ -68,3 +68,46 @@ list specific directory :- ansible all -i hosts -m shell -a "ls -l /tmp"
 show hidden files :- ansible all -i hosts -m shell -a "ls -la"
 
 check current directory :- ansible all -i hosts -m shell -a "pwd"
+
+***********************************************************************************
+
+## ansible-playbook ##
+
+ansible playbook is a YAML file that defines a set of task ansible should execute 
+on remote server.
+
+  ---
+- name: Configure Web Servers
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Update package manager
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: Start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+
+to run this :- ansible-playbook -i file-name.yaml 
+
+
+
+
+
+
+
+
+
+
