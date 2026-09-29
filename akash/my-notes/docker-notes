@@ -1,0 +1,84 @@
+
+## DOCKER ##
+> docker is a tool that simplifies the process of developing, package, and deploying application.
+> docker allows you to build, package, and run applications inside containers.
+
+## DOCKER IMAGES ##
+> A  docker image is a file made up of multiple layers that contains the instruction to build and run  a docker container .
+> it act as an executable package that includes everything needed to run an application code, runtime, libraries,enviroment variable and configurarion
+
+*** how it works ***
+ 1. image define how containor should be created 
+ 2. specify which software components will run and how they are configured.
+ 3. once an image is run, it become a docker container
+
+** relation to container **
+    docker image :- blueprint (static and read)
+     docker container :- running instance of that image (dynamic, executable)
+
+## CONTAINERS ##
+> Containers are lightweight piece of software that contains all the code, libraries, and dependencies that the application needs to run.
+> Containers share the host operating system’s kernel but keep applications and their dependencies isolated. This makes containers faster to start, less resource-hungry, and portable across environments.
+
+** notes :- 1. A container is created when a Docker Image is executed.
+            2. It runs as an isolated process on the host machine but shares the host’s operating system kernel.
+            3.  Multiple containers can run on the same system without interfering with each other.
+
+** relation to image **
+    docker image :- blueprint (static, read only)
+    docker container :- live instance of that blueprint (dynamic, executable)
+
+
+### DOCKER HUB ###
+>> Docker Hub is a repository service and it is a cloud based service where people push their Docker Container Images and also pull the Docker Container Images from the Docker Hub anytime or anywhere via the internet.
+
+> Repository Service: Serves as a global storage hub where users can push (upload) or pull (download) container images from anywhere via the internet.
+
+> Image Management: Offers the flexibility to host images in public registries (accessible to everyone) or private registries (restricted to specific users or teams).
+
+> Collaboration: Simplifies the DevOps workflow by allowing teams to find, reuse, and share standardized environments.
+> Accessibility: An open-source, freely available tool compatible with all major operating systems.
+
+>Resource Library: Hosts millions of "Official Images" for popular software like Nginx, Python, and Ubuntu, ensuring a verified starting point for projects.
+
+#### DOCKER COMMANDS ####
+
+>>> docker image <<< 
+
+1. list image :- docker images
+
+2. download image :- docker pull image-name
+
+3. remove image :- docker rmi image-name/image-id
+
+4. remove image forcefully :- docker rmi -f image-name/image-id
+
+>>> docker container <<<<
+
+1. create and start container :- docker run container-name
+
+2. run container in background :- docker run -d container-name
+
+3. run container interctively :- docker run -it ubuntu /bin/bash
+
+4. give a container name :- docker run -d --name nginx-container nginx
+
+5. Run in background + interactive terminal :- docker run -itd --name ubuntu-container ubuntu /bin/bash
+
+>>> container management <<<
+
+1. list running container :- docker ps
+
+2. list all container :- docker ps -a
+
+3. start a stopped container :- docker start nginx-container
+
+4. stop a container :- docker stop nginx-container
+
+5. restart container :- docker restart nginx-container
+
+6. remove a container :- docker rm nginx-container
+
+7. force remove container :- docker rm -f nginx-container
+
+
