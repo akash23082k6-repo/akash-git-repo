@@ -104,6 +104,171 @@ to run this :- ansible-playbook -i file-name.yaml
 
 
 
+****************************************************************************************************************
+
+## roles :- an ansible roles is a way to organize and reuse your ansible code.
+            instead of putting everything in one large playbook we divide the automation in seprate groups/folders.
+
+## why do we use roles? ##
+> suppose we want to install and Configure nginx
+  without a roles :
+  
+    - name: Install Nginx
+      hosts: all
+      become: true
+
+      tasks:
+        - name: Install nginx
+          apt:
+            name: nginx
+            state: present
+
+        - name: Start nginx
+          service:
+            name: nginx
+            state: started
+
+     as your project become bigger ,the playbook become difficult to manage .
+
+    with role:
+
+    nginx/
+    ├── tasks/
+    ├── handlers/
+    ├── templates/
+    ├── files/
+    ├── vars/
+    ├── defaults/
+    └── meta/  
+   now each part has specific purpose.
+
+****************************************************************************************************************
+
+## ansible handlers ##
+
+ an ansible handler is a special task that runs only when another taks changes something .
+ most commonly handler is used to restart or reload services after configuration changes.
+
+ suppose you modify the nginx configuration: 
+
+    - name: Configure Nginx
+      hosts: all
+      become: true
+
+      tasks:
+        - name: Copy nginx configuration
+          copy:
+            src: nginx.conf
+            dest: /etc/nginx/nginx.conf
+          notify:
+            - Restart Nginx
+
+      handlers:
+        - name: Restart Nginx
+          service:
+            name: nginx
+            state: restarted
+
+
+  ## how it works ##
+
+    Task changes file
+          ↓
+    notify: Restart Nginx
+          ↓
+    Handler runs
+          ↓
+    Nginx restarts      
+
+note :- if the copy task dosen't change anything, the handler will not run.
+
+***************************************************************************************************************
+
+## jinja2-templates ##
+
+ansible uses jinja2 templates to enable dynamic expressions and access to variable facts . you can use templating 
+with the template module.
+
+for example :- you can create a template for a configuration file, then deploy that configuration file to 
+multiple environments and supply the correct data (IP address, hostname, version) for each environment. 
+You can also use templating in playbooks directly, by templating task names and more. 
+You can use all the standard filters and tests included in Jinja2
+
+## project structure ##
+
+ansible-project/
+├── inventory
+├── playbook.yml
+└── templates/
+    └── nginx.conf.j2
+
+ ** create an jinja template **
+ mkdir templates
+touch templates/nginx.conf.j2
+
+** Put this inside templates/nginx.conf.j2: **
+
+server {
+    listen {{ nginx_port }};
+    server_name {{ server_name }};
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}
+
+** create a ansible playbook **
+
+- name: Configure Nginx
+  hosts: all
+  become: true
+
+  vars:
+    nginx_port: 8080
+    server_name: example.com
+
+  tasks:
+    - name: Create nginx configuration
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/conf.d/myapp.conf
+        mode: '0644'
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+ run this ansible-playbook -i inventory playbook.yml
+
+
+ ## how it works ##
+
+                  Ansible
+                    |
+                    ↓
+             Reads variables
+                    |
+                    ↓
+          Reads nginx.conf.j2
+                    |
+                    ↓
+        Jinja2 processes {{ variables }}
+                    |
+                    ↓
+       Generates final configuration
+                    |
+                    ↓
+        Copies file to remote server
+                    |
+                    ↓
+       /etc/nginx/conf.d/myapp.conf
+
+
+***********************************************************************************************************              
+
+
 
 
 
