@@ -8,7 +8,7 @@ ssh -i "my-key.pem" ec2-user@52.66.208.163
 
 run this below command from the local machine , where your file is present . 
 
-scp -i "my-key.pem" <file-name-to-copy> ec2-user@52.66.208.163:/home/ec2-user/
+scp -i "my-key.pem" <file-name-to-copy> ec2-user@<public-ins-ip>:/home/ec2-user/
 
 
 
