@@ -82,6 +82,64 @@
 7. force remove container :- docker rm -f nginx-container
 
 
->>> docker build :- docker build -t docker-img-name
+>>> docker build :- docker build -t <docker-image-name you want>
+
+
+>> to enter inside the container:- docker exec -it <container-name/id>  /bin/sh
+
+## DOCKER FILE ##
+> A Dockerfile is a simple text file containing instructions that Docker uses to build a Docker image.
+
+> Think of it like a recipe:
+> Dockerfile → Docker Image → Docker Container
+
+> The main Dockerfile instructions: FROM, RUN, COPY, ADD, WORKDIR, ENV, EXPOSE, CMD, and ENTRYPOINT.
+
+FROM — base image
+WORKDIR — working directory
+COPY — copy files
+RUN — execute commands while building
+ENV — environment variables
+EXPOSE — document the application port
+CMD — default command
+ENTRYPOINT — fixed application command
+
+##  HOW TO WRITE DOCKER FILE ##
+
+1. create a folder :- mkdir docker-pratice,
+                      cd docker-pratice
+
+2. create a file name index.html :
+
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>My Docker App</title>
+</head>
+<body>
+    <h1>Hello from Docker!</h1>
+    <p>This is my first Docker container.</p>
+</body>
+</html>
+
+3. now create a file name Dockerfile 
+
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+
+COPY index.html .
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+4. build the image using :- docker build -t <image-name> .
+5. check :- docker images
+
+6. run the container using :- docker run -d --name <container-name> -p 8080:80 <image-name>
+7. now check :- http://localhost:8080
+
+
 
 
