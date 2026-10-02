@@ -1,0 +1,149 @@
+## KUBERNETES ##
+> container orchestration tool 
+> globally used, powerfull, scalable, customize 
+
+## Note :- smallest unit of k8's is "pod"
+       
+## PODS ##
+           container runs inside "pod"
+           POD are "ephemeral"= lasting or used for only a short period of time
+           
+>       pod---->>>>> replicaset           
+************************************************************************************************************
+
+
+> k run nginx --image nginx. --impertive
+>declartive : yml
+
+## COMMANDS PATTERN ##
+
+> kubectl + verb + k8's object -n namespace 
+for eg. kubectl get pod -n akash 
+
+### layers 0f k8's ###
+>                                           deployment
+        |-----------------------------------------------------------------------------------------|
+        |                                                                                         |
+>       |                                  replicaset                                             |
+        |           ---------------------------------------------------------------               |  
+        |          |                                                                |             |  
+        |          |                                                                |             |
+        |          |                            pod                                 |             |
+        |          |          -----------------------------------------             |             |
+        |          |         |                                         |            |             |
+        |          |         |                                         |            |             |
+        |          |         |                                         |            |             |  
+        |          |         |                                         |            |             |
+        |          |         |            containers run               |            |             |
+        |          |         |             inside pod                  |            |             |
+        |          |         |                                         |            |             |
+        |          |         |                                         |            |             |
+        |          |          -----------------------------------------             |             |
+        |          |                                                                |             |
+        |          |                                                                |             |  
+        |           ----------------------------------------------------------------              |
+        |                                                                                         |
+        |                                                                                         |
+        |------------------------------------------------------------------------------------------
+***********************************************************************************************************8
+
+### Kubernetes (K8s) Architecture ###
+
+                    KUBERNETES CLUSTER
+                           |
+          ┌────────────────┴────────────────┐
+          │                                 │
+     CONTROL PLANE                       WORKER NODE
+          │                                 │
+   ┌──────┼──────────────┐          ┌───────┼─────────┐
+   │      │              │          │       │         │
+ API   Scheduler    Controller    Kubelet kube-proxy Runtime
+Server               Manager        │                 │
+   │                               Pod              Container
+  etcd                               │
+                                     └── Application
+
+>>  control plane :- manage the whole k8's cluster
+        
+##        1. api-server :- main entry point of kubernetes.
+
+            when you run :- kubectl get pods 
+    the req. goes -->> kubectl → API Server → Kubernetes components
+          it handles the communication between users components and the cluster.
+
+        2. etcd(Key-value database of Kubernetes)
+
+           It stores cluster information such as:
+
+            Pods
+            Nodes
+            Deployments
+            Services                        ## etcd = Kubernetes database
+            Configurations
+            Cluster state      
+
+        3. scheduler :- Decides which worker node should run a new Pod.
+
+        New Pod
+            ↓
+        Scheduler
+            ↓
+        Worker Node 2
+            ↓
+         Pod runs
+
+            it considers things such as available resources and scheduling rules.    
+
+        4. controller manager :- Continuously checks whether the actual state matches the desired state.
+         example;-
+                     you specify :- replicas: 3
+                     but only 2 pods are running then,
+                    
+                     Desired = 3 Pods
+                     Actual  = 2 Pods
+                        ↓
+                    Controller Manager
+                        ↓
+                    Creates 1 Pod   
+
+****************************************************************************************************************
+
+##      2. Worker Node :- Worker nodes are where your applications actually run
+      
+         1. kubelet :- The agent running on each worker node.
+            It communicates with the API Server and makes sure the Pods/containers assigned to that node are running.
+
+                API Server
+                    ↓
+                Kubelet
+                    ↓
+                Pod
+
+         2. container runtime ;- run the container 
+              examples :- containerd
+                          cri-o                          
+
+                    Kubelet
+                    ↓
+                    Container Runtime
+                    ↓
+                    Container
+
+         3. kube-proxy :- help implement kubernetes services networking and forwarding of 
+                          traffic to appopriate pods.
+
+                            Client
+                            ↓
+                            Service
+                            ↓
+                            kube-proxy / networking
+                            ↓
+                            Pod
+
+##      3. pod :- A Pod is the smallest deployable unit in Kubernetes.
+
+                        Pod
+                        └── Container
+                            └── Application                            
+
+                            
