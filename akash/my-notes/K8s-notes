@@ -146,4 +146,53 @@ Server               Manager        │                 │
                         └── Container
                             └── Application                            
 
-                            
+**************************************************************************************************************
+
+###      BASIC COMMANDS OF K8's     ###
+
+>                           <<<<<<<PODS>>>>>>>
+
+>>>>>>> create pod <<<<<<<
+
+    1. create a pod :- kubectl run nginx --image=nginx
+    2. create with a specific name :- kubectl run my-pod --image=nginx
+
+>>>>>>>> check pod <<<<<<
+
+    3. check pods :- kubectl get pods
+    4. check pods more details :- kubectl get pods -o wide
+    5. watch pod status :- kubectl get pods -w
+    6. check all namespace :- kubectl get pods -A
+
+    7. describe a pod :- kubectl describe pod nginx
+     
+    8. get pod YAML :- kubectl get pod nginx -o yaml
+    9. get pod JSON :- kubectl get pod nginx -o json
+
+>>>>>>>> Check Pod Logs <<<<<<<<<
+
+    10. check pod logs :- kubectl logs (pod-name) -n (namespace)
+    11. follow live logs :- kubectl logs -f (pod-name) -n (namespace)
+    12. if the pods have multiple container :- kubectl logs nginx -c container-name
+    
+>>>>>>>>>    execute commands inside pods <<<<<<<<<
+    
+    13. open shell :- kubectl exec -it (pod-name) -n (namespace) -- /bin/bash/
+    14. open shell if bash not available :- kubectl exec -it (pod-name) -n (namespace) -- /bin/sh/
+    15. run a single command :- kubectl exec (pod-name) -n (namespace) --ls
+
+>>>>>>>>> delete pods <<<<<<<<<
+    
+    16. delete single pod :- kubectl delete pod (podname) -n (namespace)
+    17. delete multiple pod :- kubectl delete pod pod1 pod2 -n (namespace)
+    18. delete all pods :- kubectl delete pods --all -n (namespace)
+
+>>>>>>>>> create pod from YAML <<<<<<<<<
+
+    19. create pod :- kubectl apply -f pod.yaml
+    20. check pod :- kubectl get pods
+    21. delete pod :- kubectl delete -f pod.yaml
+
+>   22. get pod IP :- kubectl get pod -o wide
+
+    
