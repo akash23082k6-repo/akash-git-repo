@@ -262,6 +262,12 @@ metadata:
 spec:
   replicas: 3 -->> (keep 3 pods running)
 
+  strategy:
+    type: RollingUpdate    ---->>>> for update image
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
   selector:  -->> { tells the Deployment which Pods it should manage.}
     matchLabels:
       app: nginx
@@ -295,6 +301,23 @@ spec:
     suppose your currently image :- image: nginx:1.25, and you want :- nginx:1.26
 > command to update :- kubectl set image deployment nginx=nginx:1.26 -n namespace    
 
+> *** rolling update commands ***
+
+    >> command to check rollout status : kubectl rollout status deployment deployment-name
+>>  to check rollout history : kubectl rollout history deployment deployment-name
+
+>>  to check rollout history with specifc revision: kubectl rollout history deployment deployment-name --revision revision-number
+
+>> to rollout deployment via imperative approach : kubectl set image deployment myapp-deployment nginx-container=nginx:1.15   
+>> to update change-cause in rollout history: kubectl annotate deployment deployment-name kubernetes.io/change-cause="Need to mention cause here"
+>> to add change-use in rollout without annotate: kubectl set image deployment myapp-deployment nginx-container=1.15 --record=true
+>> command to undo rollout: kubectl rollout undo deployment deployment-name 
+
+>> to undo rollout to specific version: kubectl rollout undo deployment deployment-name --to-revision=revision_number
+
+>> command to pause rollout: kubectl rollout pause depolyment deployment-name
+
+>> command to resume rollout: kubectl rollout resume deployment deployment-name
 
 
     
