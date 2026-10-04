@@ -195,4 +195,106 @@ Server               Manager        │                 │
 
 >   22. get pod IP :- kubectl get pod -o wide
 
+
+****************************************************************************************************************
+
+## Deployments ##
+> A deployments in kubernetes is used to manage and run your application pods.
+Deployment
+    ↓
+ReplicaSet
+    ↓
+Pods
+    ↓
+Container
+    ↓
+Application
+
+> for example :- if you want 3 nginx Pods, you don't normally create 3 Pods manually. 
+> You create a Deployment:
+nginx-deployment
+       ↓
+   ReplicaSet
+       ↓
+ ┌─────┼─────┐
+Pod-1 Pod-2 Pod-3
+
+> The Deployment continuously makes sure the desired number of Pods are running.
+
+
+> <<<<<<>>>>>> {why we use deployment} <<<<<<>>>>>>
+
+> without deployment:
+
+You create Pod
+     ↓
+Pod crashes
+     ↓
+You manually create another Pod 
+
+> with deployment 
+
+Deployment
+     ↓
+Pod crashes
+     ↓
+Kubernetes automatically creates replacement Pod 
+
+>**** deployment also provide ****
+
+Scaling — increase/decrease Pods
+Rolling updates — update application without stopping everything
+Rollback — go back to previous version
+Self-healing — maintain desired Pod count
+Version/revision history
+
+***************************************************************************************************************
+
+### Basic deployment YAML ###
+
+apiVersion: apps/v1 --->>> (which api version we're using)
+kind: Deployment   --->>> (tells k8s :- i want to create deployment)
+
+metadata:
+  name: nginx-deployment -->> (deployment name)
+  namespace: akash -->> (where the deployment create)
+
+spec:
+  replicas: 3 -->> (keep 3 pods running)
+
+  selector:  -->> { tells the Deployment which Pods it should manage.}
+    matchLabels:
+      app: nginx
+
+  template: -->> { these level must match the selector }
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: nginx -->> {container-name}
+          image: nginx:1.25 -->>(docker-image)
+          ports:
+            - containerPort: 80 -->>(The application/container listens on port 80.)
+
+***************************************************************************************************************** 
+
+>> **** BASIC DEPLOYMENT COMMANDS **** <<
+
+    1. check deployments :- kubectl get deployment -n namespace
+    2. check replicaset :- kubectl get replicaset -n namespace
+    
+>   scale deployment :- suppose you currently have replicas: 3,
+>   you can increase it 5 using :- kubectl scale deployment nginx-deployment --replicas=5 -n namespace
+>   you can also scale down using:- kubectl scale deployment nginx-deployment --replicas=2 -n namespace
+
+
+> *** update the application ***
+
+    suppose your currently image :- image: nginx:1.25, and you want :- nginx:1.26
+> command to update :- kubectl set image deployment nginx=nginx:1.26 -n namespace    
+
+
+
     
