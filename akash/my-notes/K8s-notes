@@ -320,4 +320,58 @@ spec:
 >> command to resume rollout: kubectl rollout resume deployment deployment-name
 
 
-    
+ **************************************************************************************************************
+
+ #### kubernetes scheduling ####
+
+    Scheduling means deciding which Worker Node should run a Pod.
+    Kubernetes uses the kube-scheduler for this job.
+    Scheduler watches for Pods that don't have a node assigned.
+    It selects the best suitable node for the Pod.   
+
+>    *** main components ***
+
+    Pod → needs a place to run.
+    kube-scheduler → selects the node.
+    Worker Node → runs the Pod.
+    kubelet → starts the Pod on the selected node.
+
+> *** scheduler checks ***
+
+CPU availability
+Memory availability
+Node resources
+Pod resource requests
+
+Node labels :- Node labels identify and classify nodes.
+
+Node selectors :- tell a Pod which node it can run on
+
+Node affinity :- Allows rules such as:
+
+                Must run on a node
+                Prefer a particular node
+
+Pod affinity :- tries to place pods together
+
+Pod anti-affinity 
+Taints and tolerations
+Topology constraints
+
+> *** Taints and Tolerations ***
+
+> Taint → keeps Pods away from a node.
+> Toleration → allows a Pod to be scheduled on a tainted node.
+
+> *** Pod anti-affinity ***
+ 
+        Tries to keep Pods apart.
+        Useful for high availability.
+        Example:
+        Don't put all replicas on the same node.
+
+> *** nodeName ***
+
+directly assign a pod to a specific node.
+this bypasses normal scheduler selection.
+
