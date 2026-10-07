@@ -683,6 +683,8 @@ spec:
  > Test from a machine that can reach the node: curl http://<NODE-IP>:30080
 
  *** LoadBalancer ***
+
+ >
  
   
 >>>>>>> 3afddc1 (added how to pratice k8s-services)
