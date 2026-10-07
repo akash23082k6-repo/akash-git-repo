@@ -544,3 +544,61 @@ because both are :-- app: nginx , the service sends traffic to those pods.
 | NodePort     | Expose outside the cluster   |
 | LoadBalancer | External load balancer       |
 | ExternalName | Maps Service to external DNS |
+
+> Range of NodePort :- 30000-32767
+
+*** How NodePort Works ***
+
+let suppose:- 
+                Node 1 - 192.168.1.10
+                Node 2 - 192.168.1.11
+                Node 3 - 192.168.1.12
+     Nodeport : 30080
+     then, the service can reach through :
+                                            192.168.1.10:30080
+                                            192.168.1.11:30080
+                                            192.168.1.12:30080
+
+even if pods are running on only one or two nodes, k8s can route traffic to the appropriate backend pods, subject to the services traffic policy.
+
+   *** LoadBalancer ***
+
+> LoadBalancer is commonly used when you want to expose an application externally using a cloud/provider load     balancer.
+
+example:
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: web-service
+
+spec:
+  type: LoadBalancer
+
+  selector:
+    app: web
+
+  ports:
+    - port: 80
+      targetPort: 8080
+
+In a cloud environment, Kubernetes asks the cloud provider to provision a load balancer.
+
+> Examples of cloud environments that can provide load balancers include:
+
+        AWS
+        Azure
+        Google Cloud
+        Other Kubernetes/cloud platforms with a suitable load-balancer implementation
+
+   *** Loadbalancer vs NodePort ***
+
+NodePort:- Expose application using Node IP + port
+LoadBalancer :- Provision/use an external load balancer
+
+   *** Port vs TargetPort ***
+
+port       :- Service port
+targetPort :- Pod/application port   
+
