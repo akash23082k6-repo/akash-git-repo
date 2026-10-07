@@ -602,4 +602,87 @@ LoadBalancer :- Provision/use an external load balancer
 port       :- Service port
 targetPort :- Pod/application port   
 
+<<<<<<< HEAD
 >
+=======
+**************************************************************************************************************
+
+## K8s-Pratice ##
+
+  *** ClusterIP ***
+
+> deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+> apply :- kubectl apply -f deployment.yaml
+> check :- kubectl get pods -o wide
+
+ *** create a clusteripservice.yaml ***
+
+ # service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+
+ > apply:- kubectl apply -f service.yaml       
+ > check :- kubectl get svc
+
+*** check endpoints ***
+
+this is very imp. for troubleshooting  service.
+
+> kubectl get endpoints
+> for newer k8s version also check :- kubectl get endpointslice
+
+*** nodeport ***
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-nodeport
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+  type: NodePort
+
+ > apply :- kubectl apply -f service-nodeport.yaml
+ > check ;- kubectl get svc
+ > output :- 
+            NAME              TYPE       CLUSTER-IP      PORT(S)
+            nginx-nodeport    NodePort   10.x.x.x        80:30080/TCP
+ > Test from a machine that can reach the node: curl http://<NODE-IP>:30080
+
+ *** LoadBalancer ***
+ 
+  
+>>>>>>> 3afddc1 (added how to pratice k8s-services)
