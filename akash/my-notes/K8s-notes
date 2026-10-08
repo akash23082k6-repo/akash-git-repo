@@ -602,4 +602,20 @@ LoadBalancer :- Provision/use an external load balancer
 port       :- Service port
 targetPort :- Pod/application port   
 
->
+  *** ConfigMaps ***
+
+> A ConfigMap stores non-sensitive configuration data (like URLs, hostnames, or settings) in key-value pairs, separate from application code. It helps make applications portable and easy to manage across different environments.
+
+> ConfigMaps can be used as:
+
+    Environment variables
+    Command-line arguments
+    Mounted configuration files inside containers
+
+
+
+
+
+
+
+
