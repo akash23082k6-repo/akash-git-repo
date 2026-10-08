@@ -616,9 +616,39 @@ targetPort :- Pod/application port
 
  > A secret in Kubernetes can be defined as an object that contains a small quantity of sensitive data like a password, a token, or a key.
 
->Reduces the risk of losing or exposing sensitive data during the workflow of creating, viewing, and editing Pods.
->Secrets are created independently of the Pods in which they are used.
->Secrets are similar to ConfigMaps, but are specifically designed to store confidential data.
+> A Secret is an object that contains a small amount of sensitive data such as a password, a token, or a key. Such information might otherwise be put in a Pod specification or in a container image. Using a Secret means that you don't need to include confidential data in your application code.
+
+> Kubernetes Secrets are, by default, stored unencrypted in the API server's underlying data store (etcd).
+
+>>>>>>>>>>>>>>>>> Uses of secrets <<<<<<<<<<<<<<<
+ you can use secrets for purposes such as :
+
+ > Set environment variables for a container.
+ > Provide credentials such as SSH keys or passwords to Pods.
+ > Allow the kubelet to pull container images from private registries.
+
+> <<<<<<<<>>>>>>>> types of secrets <<<<<<<<<>>>>>>>>>
+
+1. Opaque Secret :- this is most commonly used secret type.
+
+2. kubernetes.io/basic-auth :- used for username and password authentication.
+
+3. kubernetes.io/ssh-auth :- used to store on SSH private key.
+            common use cases :
+                                Git SSH authentication
+                                Connecting to remote servers
+                                Private repositories 
+
+4. kubernetes.io/tls :- Used for TLS/SSL certificates.                                           
+                commonly used with :- Ingress--> TLS secrets--> HTTPS
+
+5. kubernetes.io/dockerconfigjson :- Used for private Docker/container registries.
+                                    This allows Kubernetes to authenticate with the private registry when pulling an image.
+
+6. kubernetes.io/service-account-token :- used for ServiceAccount authentication.
+
+7. bootstrap.kubernetes.io/token :- Used during Kubernetes node bootstrapping, particularly when a node joins a cluster. It contains bootstrap information used during the node registration process.
+
 
 
 *** ConfigMap vs Secrets ***
