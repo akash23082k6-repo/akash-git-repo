@@ -612,10 +612,29 @@ targetPort :- Pod/application port
     Command-line arguments
     Mounted configuration files inside containers
 
+ *** Secrets *** 
+
+ > A secret in Kubernetes can be defined as an object that contains a small quantity of sensitive data like a password, a token, or a key.
+
+>Reduces the risk of losing or exposing sensitive data during the workflow of creating, viewing, and editing Pods.
+>Secrets are created independently of the Pods in which they are used.
+>Secrets are similar to ConfigMaps, but are specifically designed to store confidential data.
 
 
+*** ConfigMap vs Secrets ***
 
 
+| Feature                   | ConfigMap                            | Secrets                                   |
+| ------------------------- | -------------------------------------| ------------------------------------------|
+| Purpose                   | Non-sensitive configuration          | Sensitive/confidential data               |
+| Data examples             | App mode, URLs, ports, feature flags | Passwords, API keys tokens                |
+| Data is stored as         | Plain text                           | Base64-encoded by default                 |
+| Encryption by default     | No                                   | Not necessarily — Base64 is not encryption|
+| Used by Pods              | Yes                                  | Yes                                       |
+| Environment variables     | Yes                                  | Yes                                       |
+| Volume mount              | Yes                                  | Yes                                       |
+| Should contain passwords? | No                                   | Yes                                       |
+| -------------------------------------------------------------------------------------------------------------|
 
 
 
