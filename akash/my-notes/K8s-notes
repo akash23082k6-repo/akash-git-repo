@@ -666,5 +666,131 @@ targetPort :- Pod/application port
 | Should contain passwords? | No                                   | Yes                                       |
 | -------------------------------------------------------------------------------------------------------------|
 
+**************************************************************************************************************
 
+### k8s-volumes ###
+
+> In Kubernetes (K8s), a Volume is a storage resource that a container inside a Pod can access to read and write data.
+
+> Volumes are used to share files between containers, store application data, provide configuration files, and keep data available when containers restart.
+
+*** why do we use volume in k8s ***
+
+> 1. Data Persistence: Volumes help retain data beyond a container's lifecycle, depending on the volume type.
+
+> 2. Data Sharing: Allow multiple containers in the same Pod to share files.
+
+> 3. Configuration Management: Provide configuration files and secrets to containers.
+
+> 4. Temporary Storage: Store temporary files, cache, and application data during a Pod's lifecycle.
+
+*** types of k8s volumes ***
+
+k8s-support multiple volume types. the most useful are:-
+
+> 1. emptyDir {Temporary storage} :-
+
+creates an empty directory for a Pod. container in the same Pod can share it.
+-->> useful for temp.files,caching and sharing data from containers.
+-->> Survives a container reset while the pod remains, but its content are removed when the pod is removed from its node.
+
+> 2. hostPath {Node filesystem storage} :- 
+
+mounts a file or directory from k8s node into pod.
+-->> useful for certain node-lavel tools and single-node labs.
+-->> the data is associated with that node's filesystem.
+-->> can create security risks; generally avoid it for ordinary application storage in production.
+
+  *** persistent volume (PV) ***
+
+> it is a piece of storage that exists independently of a pod's lifecycle. it allow application to store data that remains availble even when a pod is deleted,restarted or recreated.
+
+A PV can use different storage systems such as :
+-> local disk on a node
+-> Network storage 
+-> cloud storage, such as AWS EBS or Google Persistent Disk
+-> NFS (Network File System)
+ 
+For example, suppose you deploy a MySQL database in Kubernetes. If MySQL stores its data only inside a container's writable filesystem, that data may be lost when the container is replaced.
+
+A Persistent Volume provides storage outside the container's writable filesystem so the database can retain its data.
+
+*** why do we use Persistent volume ***
+
+> without PV :-
+-> data may be lost when a container is replaced
+-> storage is tied to the container's writable filesystem
+-> difficult to manage storage consistently
+-> not suitable for durable database data
+
+> with PV :-
+-> data can survive container replacement 
+-> storsge has a seprate lifecycle
+-> storage can be manage separately 
+-> suitable for database and file upload
+
+
+*** imp. k8s storage concepts ***
+
+1. Persistent Volume (PV) :- the actual storage resource made available to kubernetes.
+2. Persistent Volume Claim (PVC) :- a request for storage made by an application or user. it specifies requirements such as capacity and access mode.
+3. pod :- Uses the storage by mounting the PVC into directory inside its container.
+
+> Think of it like renting a parking space:
+
+PV: The available parking space.
+
+PVC: Your request to reserve a parking space.
+
+Pod: The vehicle that uses the reserved space.
+
+*** Persistent Volume Claim ***
+> A Persistent Volume Claim (PVC) is a request made by a user or application for storage.
+
+1. Requests a specific amount of storage.
+2. Can specify access modes and storage requirements.
+3. Kubernetes attempts to bind the PVC to a suitable PV.
+4. Pods use the PVC to access the requested storage.
+
+****************************************************************************************************************
+## k8s-jobs ##
+
+> Jobs represent one-off tasks that run to completion and then stop.
+
+> A Job creates one or more Pods and will continue to retry execution of the Pods until a specified number of them successfully terminate. As pods successfully complete, the Job tracks the successful completions. When a specified number of successful completions is reached, the task (ie, Job) is complete. Deleting a Job will clean up the Pods it created. Suspending a Job will delete its active Pods until the Job is resumed again.
+
+ *** job-concepts ***
+
+1. Job-Parallelism :- Defines how many pods can run simultaneously to complete a job.
+    example :- parallelism: 3 -->> 3 pods can run at the same time. 
+
+2. Job-Completions :- Define how many Successful pod completions are requied for the job to finish.
+    example :- completions: 5 -->> 5 successful completion are requied.
+
+3. Job-backoffLimit :- Defines how many times k8s retries a failed pod before marking the job as failed.
+    example :- backoffLimit: 3 -->> Kubernetes allows up to 3 retries.  
+
+4. Job-Active-Deadline :- Defines the maximum time a Job can remain active before Kubernetes terminates it.
+    example :- activeDeadlineSeconds: 60 -->> the Job is stopped if it exceeds 60 seconds.   
+
+## k8s-CronJob ##
+
+A CronJob starts one-time Jobs on a repeating schedule. A CronJob creates Jobs on a repeating schedule.
+
+> CronJob is meant for performing regular scheduled actions such as backups, report generation, and so on. One CronJob object is like one line of a crontab (cron table) file on a Unix system. It runs a Job periodically on a given schedule, written in Cron format.
+
+  *** CronJob-Concept ***
+
+1. CronJob Suspend :- Controls whether a CronJob creates new Jobs.
+                    suspend: true -> Stops creating new Jobs.
+                    suspend: false -> Allows scheduled Jobs to run.
+
+2. CronJob History Limit :- Defines how many completed and failed Jobs Kubernetes keeps.
+                    successfulJobsHistoryLimit: 3 -->> Keeps the last 3 successful Jobs.
+                    failedJobsHistoryLimit: 2 -->> Keeps the last 2 failed Jobs.    
+
+3. CronJob Concurrency Policy :- Defines how Kubernetes handles a new Job when the previous Job is still running.
+                            Allow -> Allows multiple Jobs to run simultaneously.
+                            Forbid -> Skips a new Job if the previous one is still running.
+                            Replace -> Stops the running Job and starts a new one.
 
